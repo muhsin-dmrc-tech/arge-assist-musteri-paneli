@@ -1,0 +1,35 @@
+/* Button stilleri */
+.btn-primary {
+  background-color: var(--tw-primary) !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover, 
+.btn-primary:focus, 
+.btn-primary:active, 
+.btn-primary.active {
+  background-color: var(--tw-primary-active) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* MUI Button override */
+.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary {
+  background-color: var(--tw-primary) !important;
+}
+
+.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary:hover {
+  background-color: var(--tw-primary-active) !important;
+}
+
+/* Text-white butonlar için özel stil */
+.MuiButton-root.text-white,
+.btn.text-white {
+  color: #ffffff !important;
+}
+
+.MuiButton-root.text-white:hover,
+.btn.text-white:hover {
+  color: #ffffff !important;
+}
