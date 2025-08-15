@@ -9,8 +9,8 @@ interface UserStatus {
 
 interface UserStatusContextType {
   userStatuses: Map<number, UserStatus>;
-  getUserStatus: (userId: number) => UserStatus | undefined;
-  getUsersStatus: (userIds: number[]) => UserStatus[];
+  /* getUserStatus: (userId: number) => UserStatus | undefined;
+  getUsersStatus: (userIds: number[]) => UserStatus[]; */
 }
 
 const UserStatusContext = createContext<UserStatusContextType | undefined>(undefined);
@@ -18,7 +18,7 @@ const UserStatusContext = createContext<UserStatusContextType | undefined>(undef
 export const UserStatusProvider = ({ children }: { children: React.ReactNode }) => {
   const [userStatuses, setUserStatuses] = useState<Map<number, UserStatus>>(new Map());
   const emittedUserIds = useRef<Set<number>>(new Set());
-
+  
   const socket = getSocket();
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export const UserStatusProvider = ({ children }: { children: React.ReactNode }) 
 
 
 
-  const getUserStatus = (userId: number): UserStatus => {
+ /*  const getUserStatus = (userId: number): UserStatus => {
     const status = userStatuses.get(userId);
 
     if (!status && !emittedUserIds.current.has(userId)) {
@@ -74,9 +74,9 @@ export const UserStatusProvider = ({ children }: { children: React.ReactNode }) 
         lastSeen: undefined,
       }
     );
-  };
+  }; */
 
-  const getUsersStatus = (userIds: number[]): UserStatus[] => {
+/*   const getUsersStatus = (userIds: number[]): UserStatus[] => {
     return userIds.map(userId => {
       const status = userStatuses.get(userId);
 
@@ -93,11 +93,11 @@ export const UserStatusProvider = ({ children }: { children: React.ReactNode }) 
         }
       );
     });
-  };
+  }; */
 
 
   return (
-    <UserStatusContext.Provider value={{ userStatuses, getUserStatus, getUsersStatus }}>
+    <UserStatusContext.Provider value={{ userStatuses }}>
       {children}
     </UserStatusContext.Provider>
   );

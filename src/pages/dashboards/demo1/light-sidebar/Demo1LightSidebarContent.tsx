@@ -1,4 +1,3 @@
-import GorevListesi from './blocks/GorevListesi';
 
 const Demo1LightSidebarContent = () => {
   return (
@@ -9,7 +8,7 @@ const Demo1LightSidebarContent = () => {
       </div>
 
       <div className="col-span-12 md:col-span-8">
-        <GorevListesi />
+        
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ export interface AuthModel {
 export interface UserModel {
   id: number;
   FirmaAdi: string;
-  YetkiliAdSoyad: string;
+  AdSoyad: string;
   ProfilResmi?:string;
   Sifre: string | undefined;
   Email: string;

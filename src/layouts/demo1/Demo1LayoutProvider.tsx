@@ -2,7 +2,7 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { TMenuConfig, useMenuChildren } from '@/components/menu';
-import { MENU_SIDEBAR } from '@/config/menu.config';
+import { ADMIN_MENU_SIDEBAR, MENU_SIDEBAR } from '@/config/menu.config';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useMenus } from '@/providers';
 import { ILayoutConfig, useLayout } from '@/providers';
@@ -74,7 +74,7 @@ const Demo1LayoutProvider = ({ children }: PropsWithChildren) => {
   // Sets the primary and secondary menu configurations
   if (auth?.access_token) {
     if (currentUser && currentUser.KullaniciTipi === 2) {
-      setMenuConfig('primary', [...MENU_SIDEBAR]);
+      setMenuConfig('primary', [...MENU_SIDEBAR,...ADMIN_MENU_SIDEBAR]);
     } else {
       setMenuConfig('primary', MENU_SIDEBAR);
     }

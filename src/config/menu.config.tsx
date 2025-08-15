@@ -12,6 +12,26 @@ export const ORTAK_MENU_SIDEBAR: TMenuConfig = [
     icon: 'archive',
     path: '/bildirim-arsivi'
   }, */
+  {
+    title: 'Tesvik hesaplama modülü',
+    icon: 'calculator',
+    path: '/tesvik-hesaplama-modul'
+  },
+  {
+    title: 'Aylık Faaliyet Raporları',
+    icon: 'package',
+    path: '/aylik-faaliyet-raporlari'
+  },
+  {
+    title: 'Proje Başvuruları',
+    icon: 'package',
+    path: '/proje-basvurulari'
+  },
+  {
+    title: 'Projeler',
+    icon: 'package',
+    path: '/projeler'
+  },
 ]
 
 
@@ -25,7 +45,123 @@ export const MENU_SIDEBAR: TMenuConfig = [
 ];
 
 
+export const ADMIN_MENU_SIDEBAR: TMenuConfig = [
+  {
+    heading: 'Admin Menu'
+  },
+  {
+    title: 'Aylık Faaliyet Rapor Listesi',
+    icon: 'package',
+    path: '/admin-aylik-faaliyet-raporlari'
+  },
+  {
+    title: 'Proje Başvuruları',
+    icon: 'package',
+    path: '/statick/proje-basvurulari'
+  },
+  {
+    title: 'Projeler',
+    icon: 'package',
+    path: '/admin-projeler'
+  },
+ /*  {
+    title: 'Abonelik Planları',
+    icon: 'package',
+    path: '/statick/abonelik-planlari'
+  }, */
+  /* {
+    title: 'Ödeme Bildirimleri',
+    icon: 'notification',
+    path: '/statick/odeme-bildirimleri'
+  }, */
+  {
+    title: 'Dönemler',
+    icon: 'calendar-tick',
+    path: '/statick/donemler'
+  },
+  {
+    title: 'Süreçler',
+    icon: 'arrow-zigzag',
+    path: '/statick/surecler'
+  },
+ /*  {
+    title: 'Teknokentler',
+    icon: 'cube-2',
+    path: '/statick/teknokentler'
+  }, */
+  /* {
+    title: 'Resmi Tatiller',
+    icon: 'calendar',
+    path: '/statick/resmi-tatiller'
+  }, */
+ /*  {
+    title: 'İzin Türleri',
+    icon: 'element-4',
+    path: '/statick/izin-turleri'
+  }, */
+ /*  {
+    title: 'Muafiyet Tipleri',
+    icon: 'element-4',
+    path: '/statick/muafiyet-tipleri'
+  }, */
+  /* {
+    title: 'Çalışma Türleri',
+    icon: 'element-10',
+    path: '/statick/calisma-turleri'
+  }, */
+  /* {
+    title: 'Gider Tipleri',
+    icon: 'element-10',
+    path: '/statick/gider-tipleri'
+  }, */
+  /* {
+    title: 'Destek Tipleri',
+    icon: 'element-5',
+    path: '/statick/destek-tipleri'
+  }, */
+  /* {
+    title: 'Görevlendirme Türleri',
+    icon: 'element-10',
+    path: '/statick/gorevlendirme-turleri'
+  }, */
+  /* {
+    title: 'Rota İzinleri',
+    icon: 'element-8',
+    path: '/statick/rota-izinleri'
+  }, */
+  {
+    title: 'Sözleşmeler',
+    icon: 'element-6',
+    path: '/statick/sozlesmeler'
+  },
+  {
+    title: 'E-posta Şablonları',
+    icon: 'element-3',
+    path: '/statick/email-templates'
+  },
+  {
+    title: 'Bildirim Yönetimi',
+    icon: 'element-3',
+    path: '/statick/bildirimler'
+  },
+  {
+    title: 'Kullanıcı Hesapları',
+    icon: 'users',
+    path: '/statick/kullanicilar'
+  },
+  {
+    title: 'Login Kayıtları',
+    icon: 'security-user',
+    path: '/statick/login-kayitlari'
+  },
+  {
+    title: 'Log Kayıtları',
+    icon: 'element-12',
+    path: '/statick/logs'
+  },
+   
 
+];
 
 
 

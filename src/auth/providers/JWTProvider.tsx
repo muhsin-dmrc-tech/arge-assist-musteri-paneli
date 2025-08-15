@@ -12,16 +12,16 @@ import * as authHelper from '../_helpers';
 import { type AuthModel, type UserModel } from '@/auth';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
-export const LOGIN_URL = `${API_URL}/mp-auth/login`;
-export const REGISTER_URL = `${API_URL}/mp-auth/register`;
-export const FORGOT_PASSWORD_URL = `${API_URL}/mp-auth/forgot-password`;
-export const RESET_PASSWORD_URL = `${API_URL}/mp-auth/reset-password`;
-export const GET_USER_URL = `${API_URL}/mp-auth/user`;
-export const VERIFY_EMAIL_URL = `${API_URL}/mp-auth/verify-email`;
-export const VERIFY_RESEND_EMAIL_URL = `${API_URL}/mp-auth/verify-resend-email`;
-export const TWO_FACTOR_RESEND_URL = `${API_URL}/mp-auth/two-factor-resend`;
-export const TWO_FACTOR_SEND_CODE_URL = `${API_URL}/mp-auth/two-factor-login`;
-export const LOGOUT_URL = `${API_URL}/mp-auth/logout`;
+export const LOGIN_URL = `${API_URL}/auth/login`;
+export const REGISTER_URL = `${API_URL}/auth/register`;
+export const FORGOT_PASSWORD_URL = `${API_URL}/auth/forgot-password`;
+export const RESET_PASSWORD_URL = `${API_URL}/auth/reset-password`;
+export const GET_USER_URL = `${API_URL}/auth/user`;
+export const VERIFY_EMAIL_URL = `${API_URL}/auth/verify-email`;
+export const VERIFY_RESEND_EMAIL_URL = `${API_URL}/auth/verify-resend-email`;
+export const TWO_FACTOR_RESEND_URL = `${API_URL}/auth/two-factor-resend`;
+export const TWO_FACTOR_SEND_CODE_URL = `${API_URL}/auth/two-factor-login`;
+export const LOGOUT_URL = `${API_URL}/auth/logout`;
 
 
 interface AuthContextProps {
@@ -34,7 +34,7 @@ interface AuthContextProps {
   login: (email: string, password: string) => Promise<{ errorMessage: string; status: string }>;
   register: (
     email: string,
-    yetkiliFullName: string,
+    fullName: string,
     firmaAdi: string,
     password: string,
     confirmPassword: string
@@ -144,7 +144,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const register = async (
-    yetkiliFullName: string,
+    fullName: string,
     firmaAdi: string,
     email: string,
     password: string,
@@ -154,7 +154,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       localStorage.clear();
       sessionStorage.clear();
       const { data } = await axios.post(REGISTER_URL, {
-        yetkiliFullName,
+        fullName,
         firmaAdi,
         email,
         password,

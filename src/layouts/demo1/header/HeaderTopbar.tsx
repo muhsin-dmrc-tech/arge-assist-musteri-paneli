@@ -260,9 +260,9 @@ const HeaderTopbarim = () => {
             {currentUser?.ProfilResmi ? <img
               src={`${API_URL + currentUser?.ProfilResmi}`}
               className="rounded-full size-9 shrink-0"
-              alt={`${currentUser?.YetkiliAdSoyad}`}
+              alt={`${currentUser?.AdSoyad}`}
             /> : <span className="flex items-center justify-center size-9 rounded-full border-2 border-success  text-sm font-semibold text-white bg-red-400">
-              {currentUser?.YetkiliAdSoyad?.slice(0, 1).toUpperCase()}
+              {currentUser?.AdSoyad?.slice(0, 1).toUpperCase()}
             </span>}
           </MenuToggle>
           {DropdownUser({ menuItemRef: itemUserRef })}

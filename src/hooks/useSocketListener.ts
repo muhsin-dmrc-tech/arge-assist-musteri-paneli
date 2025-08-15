@@ -20,8 +20,8 @@ export const useSocketListener = () => {
             const socket = getSocket();
             const join = async () => {
                 userStatusPost = true;
-                socket.emit('joinRoomMp', currentUser.id);
-                socket.emit('userStatusMp', { userId: currentUser.id, status: 'online'});
+                socket.emit('joinRoom', currentUser.id);
+                socket.emit('userStatus', { userId: currentUser.id, status: 'online'});
             };
             if (!userStatusPost) {
                 await join(); // İlk bağlandığında
@@ -29,27 +29,27 @@ export const useSocketListener = () => {
 
 
             // Her bağlandığında tekrar join
-            socket.on('connectMp', join);
+            socket.on('connect', join);
 
             const handleVisibilityChange = () => {
                 const status = document.hidden ? 'offline' : 'online';
-                socket.emit('userStatusMp', { userId: currentUser.id, status});
+                socket.emit('userStatus', { userId: currentUser.id, status});
             };
 
             document.addEventListener('visibilitychange', handleVisibilityChange);
 
             // Eventler
-            socket.on('newNotificationMp', handleBildirimGeldi);
-            socket.on('BildirimOkunduMp', handleBildirimOkundu);
+            socket.on('newNotification', handleBildirimGeldi);
+            socket.on('BildirimOkundu', handleBildirimOkundu);
 
 
             return () => {
                 document.removeEventListener('visibilitychange', handleVisibilityChange);
-                socket.emit('userStatusMp', { userId: currentUser.id, status: 'offline' });
+                socket.emit('userStatus', { userId: currentUser.id, status: 'offline' });
 
-                socket.off('connectMp', join);
-                socket.off('newNotificationMp', handleBildirimGeldi);
-                socket.off('BildirimOkunduMp', handleBildirimOkundu);
+                socket.off('connect', join);
+                socket.off('newNotification', handleBildirimGeldi);
+                socket.off('BildirimOkundu', handleBildirimOkundu);
             };
         })()
     }, [currentUser]);

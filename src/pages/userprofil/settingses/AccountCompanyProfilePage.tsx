@@ -7,7 +7,6 @@ import {
   ToolbarHeading,
   ToolbarPageTitle
 } from '@/partials/toolbar';
-import { PageNavbar } from '@/pages/account';
 
 import { AccountCompanyProfileContent } from '.';
 import { useLayout } from '@/providers';
@@ -17,7 +16,6 @@ const AccountCompanyProfilePage = () => {
 
   return (
     <Fragment>
-      <PageNavbar />
 
       {currentLayout?.name === 'demo1-layout' && (
         <Container>

@@ -46,7 +46,7 @@ const SozlesmeSayfasi = () => {
 
   return (
     <Fragment>
-      {/* <PageNavbar /> */}
+       
 
       <Container>
         <Toolbar>

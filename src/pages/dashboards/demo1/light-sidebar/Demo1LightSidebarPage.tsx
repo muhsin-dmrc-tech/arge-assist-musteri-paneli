@@ -12,7 +12,7 @@ const {currentUser} = useAuthContext();
       <Container>
         <Toolbar>
           <ToolbarHeading title={
-            <span className='text-md decoration-uppercase'>{currentUser?.YetkiliAdSoyad && "Hoşgeldin "+currentUser?.YetkiliAdSoyad.split(' ')[0]}</span>} description="" />
+            <span className='text-md decoration-uppercase'>{currentUser?.AdSoyad && "Hoşgeldin "+currentUser?.AdSoyad.split(' ')[0]}</span>} description="" />
           <ToolbarActions>
             
           </ToolbarActions>

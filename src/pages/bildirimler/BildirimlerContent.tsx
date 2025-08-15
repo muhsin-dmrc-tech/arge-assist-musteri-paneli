@@ -32,7 +32,7 @@ const BildirimArsiviContent = () => {
 
     try {
       const response = await axios.get(
-        `${API_URL}/mp-kullanici-bildirimleri/get-bildirim-arsiv?${queryParams.toString()}`
+        `${API_URL}/kullanici-bildirimleri/get-bildirim-arsiv?${queryParams.toString()}`
       );
       if (response.data.selectedYear) {
         setCurrentYear(Number(response.data.selectedYear))

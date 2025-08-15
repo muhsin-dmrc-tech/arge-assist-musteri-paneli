@@ -1,29 +1,16 @@
 import { useResponsive, useScrollPosition } from '@/hooks';
 import {
-  AdvancedSettingsAddress,
-  AdvancedSettingsAppearance,
-  AdvancedSettingsNotifications,
-  AdvancedSettingsPreferences,
   AuthEmail,
   AuthPassword,
-  AuthSingleSingOn,
-  AuthSocialSignIn,
-  AuthTwoFactor,
   BasicSettings,
-  DeleteAccount,
-  ExternalServicesIntegrations,
-  ExternalServicesManageApi
 } from './blocks';
-import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
-import { Scrollspy } from '@/components/scrollspy/Scrollspy';
-import { AccountSettingsSidebar } from '@/pages/account/home/settings-sidebar';
 import { useLayout } from '@/providers';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { UserModel } from '@/auth';
 import { useAuthContext } from '@/auth';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -66,10 +53,10 @@ const AccountSettingsSidebarContent = () => {
       id: 0,
       Email: '',
       AdSoyad: '',
+      FirmaAdi: '',
       ProfilResmi:'',
       Telefon: '',
-      Sifre: '',
-      role : 'user'
+      Sifre: ''
     }
   });
 

@@ -14,7 +14,7 @@ import axios, { AxiosError } from 'axios';
 const SozlesmelerModal = lazy(() => import('@/partials/modals/sozlesmeler-modal/SozlesmelerModal'));
 
 const initialValues = {
-  yetkiliFullName: '',
+  fullName: '',
   firmaAdi: '',
   email: '',
   password: '',
@@ -23,7 +23,7 @@ const initialValues = {
 };
 
 const signupSchema = Yup.object().shape({
-  yetkiliFullName: Yup.string()
+  fullName: Yup.string()
     .min(3, 'En az 3 karakter')
     .max(50, 'En fazla 50 karakter')
     .required('Ad Soyad zorunludur'),
@@ -80,7 +80,7 @@ const Signup = () => {
         if (!values.acceptTerms) {
           throw new Error('Kullanım koşullarını kabul etmelisiniz.');
         }
-        const response: any = await register(values.yetkiliFullName,values.firmaAdi, values.email, values.password, values.confirmPassword);
+        const response: any = await register(values.fullName,values.firmaAdi, values.email, values.password, values.confirmPassword);
         if (response && response.status === 'error') {
           let rawError = response.errorMessage;
           let errorMessage = 'Bir hata oluştu';
@@ -215,19 +215,19 @@ const Signup = () => {
               placeholder="Yetkili Ad Soyad"
               type="text"
               autoComplete="off"
-              {...formik.getFieldProps('yetkiliFullName')}
+              {...formik.getFieldProps('fullName')}
               className={clsx(
                 'form-control bg-transparent',
-                { 'is-invalid': formik.touched.yetkiliFullName && formik.errors.yetkiliFullName },
+                { 'is-invalid': formik.touched.fullName && formik.errors.fullName },
                 {
-                  'is-valid': formik.touched.yetkiliFullName && !formik.errors.yetkiliFullName
+                  'is-valid': formik.touched.fullName && !formik.errors.fullName
                 }
               )}
             />
           </label>
-          {formik.touched.yetkiliFullName && formik.errors.yetkiliFullName && (
+          {formik.touched.fullName && formik.errors.fullName && (
             <span role="alert" className="text-danger text-xs mt-1">
-              {formik.errors.yetkiliFullName}
+              {formik.errors.fullName}
             </span>
           )}
         </div>

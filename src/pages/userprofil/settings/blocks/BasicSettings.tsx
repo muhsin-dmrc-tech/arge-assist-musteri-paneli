@@ -46,6 +46,18 @@ const BasicSettings = ({ userValues, setUserValues, setInfoFunc }: any) => {
           </div>
         </div>
 
+         <div className="w-full">
+          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+            <label className="form-label flex items-center gap-1 max-w-56">Firma Adı</label>
+            <input
+              className="input"
+              type="text"
+              value={userValues?.user?.FirmaAdi}
+              onChange={(e) => setUserValues({ ...userValues, user: { ...userValues.user, FirmaAdi: e.target.value } })}
+            />
+          </div>
+        </div>
+
         {/* <div className="w-full">
           <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
             <label className="form-label flex items-center gap-1 max-w-56">Birth Date</label>

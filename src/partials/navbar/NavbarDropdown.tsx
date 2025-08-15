@@ -10,9 +10,6 @@ import {
 } from '@/components/menu';
 import { KeenIcon } from '@/components/keenicons';
 import { useLanguage } from '@/i18n';
-import { ModalShareProfile } from '../modals/share-profile';
-import { ModalGiveAward } from '../modals/give-award';
-import { ModalReportUser } from '../modals/report-user';
 
 const NavbarDropdown = () => {
   const itemRef = useRef<any>(null);
@@ -110,9 +107,6 @@ const NavbarDropdown = () => {
         </MenuItem>
       </Menu>
 
-      <ModalShareProfile open={shareProfileModalOpen} onOpenChange={handleShareProfileModalClose} />
-      <ModalGiveAward open={giveAwardModalOpen} onOpenChange={handleGiveAwardModalClose} />
-      <ModalReportUser open={reportUserModalOpen} onOpenChange={handleReportUserModalClose} />
     </Fragment>
   );
 };
