@@ -66,17 +66,70 @@ const Demo1LayoutProvider = ({ children }: PropsWithChildren) => {
   const { setMenuConfig } = useMenus(); // Accesses menu configuration methods
   const secondaryMenu = useMenuChildren(pathname, MENU_SIDEBAR, 0); // Retrieves the secondary menu
   const { currentUser, auth } = useAuthContext();
+  const [filterMenuSidebar, setFilterMenuSidebar] = useState([] as TMenuConfig);
 
-  
+
+
+  useEffect(() => {
+    const newMenuSidebar = MENU_SIDEBAR.reduce((acc: typeof MENU_SIDEBAR, item, index, array) => {
+      // Rol ve FirmaID kontrolü
+      const hasRoleAccess = (menuItem: any) => {
+        if (!menuItem.abonelik) return true;
+        if (!currentUser?.Abonelik) return false;
+        return currentUser?.Abonelik ? true : false;
+      };
+
+
+      // Heading kontrolü
+      if (item.heading) {
+        const nextHeadingIndex = array.findIndex((menuItem, i) =>
+          i > index && menuItem.heading
+        );
+
+        const subMenuItems = array.slice(
+          index + 1,
+          nextHeadingIndex === -1 ? array.length : nextHeadingIndex
+        );
+
+        // Alt menülerde yetkili veya izinsiz öğe var mı kontrol et
+        const hasAuthorizedOrPermissionlessItem = subMenuItems.some(subItem =>
+          !subItem.heading && hasRoleAccess(subItem)
+        );
+
+        if (hasAuthorizedOrPermissionlessItem) {
+          acc.push(item);
+        }
+      } else {
+        // Normal menü öğeleri için rol ve izin kontrolü
+        if (hasRoleAccess(item)) {
+          const isAlreadyAdded = acc.some(accItem =>
+            accItem.path === item.path && accItem.title === item.title
+          );
+
+          if (!isAlreadyAdded) {
+            const updatedItem = {
+              ...item,
+              path:item.path
+            };
+            acc.push(updatedItem);
+          }
+        }
+      }
+
+      return acc;
+    }, []);
+
+    setFilterMenuSidebar(newMenuSidebar);
+  }, [currentUser]);
 
 
 
   // Sets the primary and secondary menu configurations
   if (auth?.access_token) {
     if (currentUser && currentUser.KullaniciTipi === 2) {
-      setMenuConfig('primary', [...MENU_SIDEBAR,...ADMIN_MENU_SIDEBAR]);
+      setMenuConfig('primary', [...MENU_SIDEBAR, ...ADMIN_MENU_SIDEBAR]);
     } else {
-      setMenuConfig('primary', MENU_SIDEBAR);
+      setMenuConfig('primary', filterMenuSidebar);
     }
   } else {
     setMenuConfig('primary', [{

@@ -45,17 +45,24 @@ const FaaliyetRaporlari = () => {
   const [queryFilter, setQueryFilter] = useState<filterType[]>([] as filterType[]);
   const [showNotFound, setShowNotFound] = useState(false);
 
-useEffect(() => {
-  if (!loading && itemDataes.length === 0) {
-    const timeout = setTimeout(() => {
-      setShowNotFound(true);
-    }, 1000); // 1 saniye sonra mesajı göster
 
-    return () => clearTimeout(timeout); // component unmount olursa temizle
-  } else {
-    setShowNotFound(false); // veri varsa veya loading'se resetle
+  if (!currentUser?.Abonelik) {
+    return <div className="flex items-center p-3 w-full justify-center bg-red-100 rounded-lg">
+      <h2 className="font-semibold text-red-700">Firmanıza ait aktif abonelik bulunamadı !</h2>
+    </div>
   }
-}, [loading, itemDataes]);
+
+  useEffect(() => {
+    if (!loading && itemDataes.length === 0) {
+      const timeout = setTimeout(() => {
+        setShowNotFound(true);
+      }, 1000); // 1 saniye sonra mesajı göster
+
+      return () => clearTimeout(timeout); // component unmount olursa temizle
+    } else {
+      setShowNotFound(false); // veri varsa veya loading'se resetle
+    }
+  }, [loading, itemDataes]);
 
 
 
@@ -94,11 +101,11 @@ useEffect(() => {
 
 
   useEffect(() => {
-     setLoading(true);
+    setLoading(true);
     if (currentUser?.id) {
       fetchBusinessTypessData()
-    }else{
-       setLoading(false);
+    } else {
+      setLoading(false);
     }
   }, [pageIndex, searchQuery, currentUser?.id]);
 
@@ -294,7 +301,7 @@ useEffect(() => {
 
 
           <div className="flex flex-wrap items-center justify-end w-full gap-2.5">
-           <Link to={`/aylik-faaliyet-raporlari/edit`} className="btn btn-sm btn-primary px-1">Aylik Faaliyet Raporu Oluştur</Link>
+            <Link to={`/aylik-faaliyet-raporlari/edit`} className="btn btn-sm btn-primary px-1">Aylik Faaliyet Raporu Oluştur</Link>
             {alertModalData.actionButton && <AlertDialog
               open={openAlertModal}
               setOpen={setOpenAlertModal}
@@ -312,38 +319,38 @@ useEffect(() => {
   return (
     <>
       {
-          <div className="gap-3 flex flex-col">
-            <Toolbar setSearchQuery={setSearchQuery} />
-            {itemDataes.length > 0 ?
-              <>
+        <div className="gap-3 flex flex-col">
+          <Toolbar setSearchQuery={setSearchQuery} />
+          {itemDataes.length > 0 ?
+            <>
 
-                {
-                  loading ?
-                    <CircularProgress />
-                    :
-                    itemDataes.map((item, index) =>
-                      <Plan key={index} item={item} />
-                    )}
+              {
+                loading ?
+                  <CircularProgress />
+                  :
+                  itemDataes.map((item, index) =>
+                    <Plan key={index} item={item} />
+                  )}
 
 
-                {totalCount > 10 && <Pagination
-                  currentPage={pageIndex}
-                  totalPages={Math.ceil(totalCount / 10)}
-                  onPageChange={(page) => {
-                    setPageIndex(page);
-                    fetchBusinessTypessData();
-                  }}
-                />}
-              </>
-              : loading ?
-                    <CircularProgress />
-                    : showNotFound ? (
-              <div className="flex items-center p-3 w-full justify-center bg-red-100 rounded-lg">
-                <h2 className="font-semibold text-red-700">Hiç Aylık Faaliyet Raporu Bulunamadı !</h2>
-              </div>) : null
-            }
-          </div>
-        
+              {totalCount > 10 && <Pagination
+                currentPage={pageIndex}
+                totalPages={Math.ceil(totalCount / 10)}
+                onPageChange={(page) => {
+                  setPageIndex(page);
+                  fetchBusinessTypessData();
+                }}
+              />}
+            </>
+            : loading ?
+              <CircularProgress />
+              : showNotFound ? (
+                <div className="flex items-center p-3 w-full justify-center bg-red-100 rounded-lg">
+                  <h2 className="font-semibold text-red-700">Hiç Aylık Faaliyet Raporu Bulunamadı !</h2>
+                </div>) : null
+          }
+        </div>
+
       }
     </>
   )

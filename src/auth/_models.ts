@@ -16,4 +16,5 @@ export interface UserModel {
   auth?: AuthModel;
   isActive?:boolean;
   KullaniciTipi?: number;
+  Abonelik?:string
 }

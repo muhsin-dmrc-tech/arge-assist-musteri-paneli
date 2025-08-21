@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router';
 
-const FirmaAbonelikYenileModal = ({ open, setOpen, firmaID }: { open: boolean; setOpen: (value: boolean) => void; firmaID: number }) => {
+const FirmaAbonelikYenileModal = ({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void; }) => {
 
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ const FirmaAbonelikYenileModal = ({ open, setOpen, firmaID }: { open: boolean; s
           <DialogTitle className="text-2xl font-bold">Firmanızın Aboneliği Bulunamadı Yada Süresi Dolmuş</DialogTitle>
           <DialogDescription>Lütfen firma nız la ilgili işlemleri yapmaya devam edebilmek için Firma Aboneliği satın alın.</DialogDescription>
           <div className="flex flex-row gap-3 justify-between">
-            <button onClick={() => {setOpen(false);navigate(`/${firmaID}/firma-abonelikler`)}} className='btn btn-success'>Şimdi Satın Al</button>
+            <button onClick={() => {setOpen(false);navigate(`/abonelik-planlari`)}} className='btn btn-success'>Şimdi Satın Al</button>
             <button onClick={() => setOpen(false)} className='btn btn-warning'>Vazgeç</button>
           </div>
         </DialogHeader>

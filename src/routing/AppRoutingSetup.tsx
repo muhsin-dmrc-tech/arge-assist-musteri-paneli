@@ -41,6 +41,11 @@ import { ProjeBasvuruDetayPage } from '@/pages/staticks-pages/proje-basvuru-deta
 import { ProjelerAdminPage } from '@/pages/staticks-pages/projeler';
 import { ProjelerUploadPage } from '@/pages/staticks-pages/projeler-upload';
 import { ProjelerPage } from '@/pages/projeler';
+import { AccountPlansPage } from '@/pages/abonelikler';
+import { OdemeSayfasiPage } from '@/pages/odeme-sayfasi';
+import { OdemeBildirimleriPage } from '@/pages/staticks-pages/odeme-bildirimleri';
+import { SiparislerPage } from '@/pages/siparisler';
+import { FaturalarPage } from '@/pages/faturalar';
 
 const AppRoutingSetup = (): ReactElement => {
   return (
@@ -62,13 +67,16 @@ const AppRoutingSetup = (): ReactElement => {
           <Route path="/proje-basvurulari/edit/:itemId?" element={<ProjeBasvuruWizardPage />} />
           <Route path="/proje-basvurulari/detay/:itemId?" element={<ProjeBasvuruDetayPage />} />
           <Route path="/projeler" element={<ProjelerPage />} />
+          <Route path="/abonelik-planlari" element={<AccountPlansPage />} />
+          <Route path="/odeme-sayfasi/:siparisId?" element={<OdemeSayfasiPage />} />
+          <Route path="/siparisler" element={<SiparislerPage />} />
+          <Route path="/faturalar" element={<FaturalarPage />} />
 
           {/* STATİK ROTALARIM */}
           <Route path="/admin-aylik-faaliyet-raporlari" element={<AylikFaaliyetRaporlariAdminPage />} />
           <Route path="/admin-aylik-faaliyet-raporlari/detay/:itemId?" element={<AylikFaaliyetRaporuDetayPage />} />
           <Route path="/admin-projeler" element={<ProjelerAdminPage />} />
           <Route path="/admin-projeler/edit/:itemId?" element={<ProjelerUploadPage />} />
-          <Route path="/statick/rota-izinleri" element={<RotaIzinleriPage />} />
           <Route path="/statick/rota-izinleri" element={<RotaIzinleriPage />} />
           <Route path="/statick/izin-turleri" element={<IzinTuruPage />} />
           <Route path="/statick/muafiyet-tipleri" element={<MuafiyetTipiPage />} />
@@ -91,7 +99,7 @@ const AppRoutingSetup = (): ReactElement => {
           <Route path="/statick/sozlesmeler" element={<SozlesmelerPage />} />
           <Route path="/statick/sozlesme-upload/:itemAnahtar?" element={<SozlesmeUploadPage />} />
           <Route path="/statick/proje-basvurulari" element={<ProjeBasvuruAdminPage />} />
-          {/* <Route path="/statick/odeme-bildirimleri" element={<OdemeBildirimleriPage />} /> */}
+          <Route path="/statick/odeme-bildirimleri" element={<OdemeBildirimleriPage />} />
 
         </Route>
 

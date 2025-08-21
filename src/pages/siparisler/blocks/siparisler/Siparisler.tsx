@@ -1,13 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo,useState } from 'react';
 import { Column, ColumnDef, RowSelectionState } from '@tanstack/react-table';
-import { DataGrid, DataGridColumnHeader, DataGridColumnVisibility, DataGridRowSelect, DataGridRowSelectAll, KeenIcon, useDataGrid, TDataGridRequestParams } from '@/components';
+import { DataGrid, DataGridColumnHeader, DataGridColumnVisibility, DataGridRowSelect, DataGridRowSelectAll, KeenIcon, useDataGrid,  TDataGridRequestParams } from '@/components';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { IITemsTypesData } from '.';
 import axios from 'axios';
 import AlertDialog from '@/components/alert-modal/AlertDialog';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/auth';
+import yetkiKontrolu from '@/hooks/yetkiKontrolFunc';
 
 
 
@@ -25,7 +27,8 @@ interface AlertDialogProps {
   actionButton: ButtonProps;
 }
 
-const OdemeBildirimleri = () => {
+const Siparisler = () => {
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_APP_API_URL;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeLoading, setActiveLoading] = useState<Record<number, boolean>>({});
@@ -33,21 +36,18 @@ const OdemeBildirimleri = () => {
   const [serverSide, setServerSide] = useState(true);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [alertModalData, setAlertModalData] = useState<AlertDialogProps>({} as AlertDialogProps);
-  const { currentUser, auth } = useAuthContext();
-  const [submitVisible, setSubmitVisible] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { currentUser } = useAuthContext();
 
 
 
   useEffect(() => {
-    if (currentUser?.KullaniciTipi === 2) {
+    if (currentUser?.id) {
       setServerSide(false)
       setTimeout(() => {
         setServerSide(true)
       }, 100)
     }
-  }, [currentUser]);
+  }, [currentUser?.id]);
 
 
   const fetchBusinessTypessData = async (params: TDataGridRequestParams) => {
@@ -75,7 +75,7 @@ const OdemeBildirimleri = () => {
         });
       }
 
-      if (currentUser?.KullaniciTipi === 2) {
+      if (currentUser?.id) {
         const templateData = await fetchBusinessTypess(queryParams)
         return templateData;
       } else {
@@ -102,7 +102,7 @@ const OdemeBildirimleri = () => {
   const fetchBusinessTypess = async (queryParams: any) => {
     try {
       const response = await axios.get(
-        `${API_URL}/siparisler/get-odeme-bildirimleri?${queryParams.toString()}`
+        `${API_URL}/siparisler/get-siparisler?${queryParams.toString()}`
       );
 
       return {
@@ -276,35 +276,47 @@ const OdemeBildirimleri = () => {
         ),
         enableSorting: false,
         cell: ({ row }) => {
-          const handleOnayFunc = async () => {
-            alertModalFunc({
-              title: "Ödeme Onayla",
-              text: "Ödemeyi onaylamak istiyormusunuz? Bu işlem geri alınamaz.",
-              actionButton: {
-                onClick: () => odemeyiOnaylaFunc(row.original.SiparisID),
-                text: "Onayla"
-              },
-              closeButton: {
-                onClick: () => setOpenAlertModal(false),
-                text: "Vazgeç"
-              }
-            });
-          };
-          return activeLoading[row.original.FaturaID] ? (
-            <div className="flex items-center justify-center bg-white/50 z-10">
-              <span className="text-sm text-gray-500">Güncelleniyor...</span>
+          return (
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-0.5">
+                <span className={`badge badge-sm badge-outline ${row.original.Durum === 'Ödendi' ? "badge-success" : row.original.Durum === 'Bekleniyor' ? "badge-warning" : "badge-danger"}`}>
+                  {row.original.Durum ?? "Bekliyor"}
+                </span>
+                {(row.original.Durum !== 'Ödendi' && !row.original.OdemeTarihi) &&
+                  <button className="btn btn-primary btn-sm h-[1.5rem] px-0 flex justify-center" onClick={() => navigate(`/odeme-sayfasi/${row.original.SiparisID}`)}>
+                    Şimdi Öde
+                  </button>
+                }
+              </div>
             </div>
-          ) : (
-            row.original.Durum !== 'Ödendi' && !row.original.OdemeTarihi) &&
-          <button className="btn btn-primary btn-sm h-[1.5rem] px-0 flex justify-center"
-            onClick={() => handleOnayFunc()}>
-            Ödemeyi Onayla
-          </button>
+          );
         },
         meta: {
           headerClassName: "min-w-[50px]",
         },
-      }
+      },
+      {
+        accessorKey: "OdenmemeSebebi",
+        id: "OdenmemeSebebi",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Ödenmeme Sebebi" column={column} />
+        ),
+        enableSorting: false,
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-0.5">
+                <span className="leading-none font-medium text-sm text-gray-900">
+                  {row.original.OdenmemeSebebi ?? '-'}
+                </span>
+              </div>
+            </div>
+          );
+        },
+        meta: {
+          headerClassName: "min-w-[50px]",
+        },
+      },
     ],
     [itemDataes, activeLoading]
   );
@@ -312,53 +324,7 @@ const OdemeBildirimleri = () => {
     setAlertModalData(data);
     setOpenAlertModal(true);
   };
-  const odemeyiOnaylaFunc = async (siparisID: number) => {
-    if (submitVisible) return;
-    setActiveLoading((prev) => ({
-      ...prev,
-      [siparisID]: true,
-    }));
-    try {
-      const response = await axios.post(
-        `${API_URL}/odemeler/odeme-onay`,
-        { SiparisID: siparisID },
-        { headers: { Authorization: `Bearer ${auth?.access_token}` } }
-      );
-      if (response.status === 201) {
-        let successMessage = response.data?.message ?? 'İşlem başarılı';
-        setSuccessMessage(successMessage);
-        toast.success(successMessage, { duration: 10000 });
-        setItemDataes(prev => prev.filter(item => item.SiparisID !== siparisID));
-      } else {
-        setError(response.data?.message || 'İşlem sıarsında hata oluştu');
-        toast.error('İşlem sıarsında hata oluştu', { duration: 5000 });
-      }
-    } catch (error: any) {
-      setSuccessMessage('');
-      let errorMessages = 'Bilinmeyen bir hata oluştu.';
 
-      if (error.response?.data?.message) {
-        const message = error.response.data.message;
-        if (Array.isArray(message)) {
-          errorMessages = message
-            .map((err) => (typeof err === 'string' ? err : Object.values(err.constraints || {}).join(' ')))
-            .join(' | ');
-        } else if (typeof message === 'string') {
-          errorMessages = message;
-        }
-      }
-
-      setError(errorMessages);
-      toast.error('İşlem sıarsında hata oluştu', { duration: 5000 });
-    } finally {
-      setSubmitVisible(false);
-      setActiveLoading((prev) => ({
-        ...prev,
-        [siparisID]: false,
-      }));
-    } 
-
-  };
 
 
   const handleRowSelection = (state: RowSelectionState) => {
@@ -404,19 +370,8 @@ const OdemeBildirimleri = () => {
     return (
       <div className="flex-col px-5 py-5 border-b-0">
         <div className="flex w-full justify-between flex-wrap gap-2">
-          <div>{error && (
-            <div className="text-red-700 flex items-center gap-2 ps-3">
-              <KeenIcon icon="information-2" />
-              <span>{error}</span>
-            </div>
-          )}
-            {successMessage && (
-              <div className="text-lime-400 flex items-center gap-2 ps-3">
-                <KeenIcon icon="information-1" />
-                <span>{successMessage}</span>
-              </div>
-            )}</div>
-          <div className="flex flex-wrap items-center justify-between gap-2.5">
+          <div></div>
+          <div className="flex flex-wrap items-center gap-2.5">
             {alertModalData.actionButton && <AlertDialog
               open={openAlertModal}
               setOpen={setOpenAlertModal}
@@ -425,11 +380,6 @@ const OdemeBildirimleri = () => {
               actionButton={alertModalData.actionButton}
               closeButton={alertModalData.closeButton}
             />}
-            <div className="text-info max-w-[70%]">
-              Not: Ödeme bildirimi yapan firmaları görüntülüyorsunuz.
-              Lütfen banka hesabını kontrol edin ödeme yapıldı ise ödemeyi onayla butonuna tıklayın. Eğer ödeme yapılmamışsa hiç bir işlem yapmayın.
-              24 saat içinde ödeme yapılmayan işlemler ödenmedi olarak otomatik işaretlenir.
-            </div>
             <DataGridColumnVisibility table={table} />
           </div>
         </div>
@@ -439,15 +389,7 @@ const OdemeBildirimleri = () => {
 
   return (
     <>
-      {currentUser?.KullaniciTipi !== 2 ? (
-        <div className='alert alert-error'>
-          <div className='flex items-center gap-2'>
-            <KeenIcon icon="shield-cross" className="text-red-600" />
-            <span>Bu sayfaya erişim için gerekli izninleriniz eksik!</span>
-          </div>
-        </div>
-      ) :
-        (
+      {
           <DataGrid
             columns={columns}
             itemData={itemDataes}
@@ -461,10 +403,10 @@ const OdemeBildirimleri = () => {
             toolbar={<Toolbar setSearchQuery={setSearchQuery} />}
             layout={{ card: true }}
           />
-        )
+        
       }
     </>
   )
 };
 
-export { OdemeBildirimleri };
+export { Siparisler };

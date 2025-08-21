@@ -8,29 +8,25 @@ interface KullaniciType {
   FirmaAdi:string;
 }
 
-interface AbonelikPlanType {
-  AbonelikPlanID:number;
+interface AbonelikType {
+  AbonelikID:number;
   PlanAdi:string;
   Aciklama:string;
   Fiyat:number;
 }
 
 interface IITemsTypesData {
-  SiparisID:number;
   FaturaID:number;
-  AbonelikPlanID:number;
-  AbonelikPlan:AbonelikPlanType;
+  AbonelikID:number;
   KullaniciID:number;
   Kullanici:KullaniciType;
   FaturaBilgiID:number;
-  OlusturmaTarihi:string;
-  OdemeTarihi:string;
-  OdemeVadesi:string;
+  FaturaTarihi:string;
+  SonOdemeTarihi:string;
   Tutar:number;
   Durum:string;
   DeletedAt?:string;
   IsDeleted?:boolean;
-  OdenmemeSebebi?:string;
 }
 
 const ITemsTypesData: IITemsTypesData[] = [];

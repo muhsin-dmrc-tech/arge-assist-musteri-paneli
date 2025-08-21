@@ -34,7 +34,6 @@ const App = () => {
   const { isBlocked, blockTime, message, abonelikBitmis, setAbonelikBitmis } = useAxiosInterceptors(auth, saveAuth, setCurrentUser);
   const [open, setOpen] = useState(false);
   const [openAbonelikYenile, setOpenAbonelikYenile] = useState(false);
-  const [firmaAbonelikYenileID, setFirmaAbonelikYenileID] = useState(0);
 
  
 
@@ -46,7 +45,6 @@ const App = () => {
     }
     if (abonelikBitmis > 0) {
       setOpenAbonelikYenile(true)
-      setFirmaAbonelikYenileID(abonelikBitmis)
       setTimeout(() => {
         setAbonelikBitmis(0)
       }, 500)
@@ -77,7 +75,7 @@ const App = () => {
             <PathnameProvider>
               <Suspense fallback={<div>Yükleniyor...</div>}>
                 {open && IstekKotaAlertModal && <IstekKotaAlertModal open={open} setOpen={setOpen} />}
-                {openAbonelikYenile && FirmaAbonelikYenileModal && <FirmaAbonelikYenileModal open={openAbonelikYenile} setOpen={setOpenAbonelikYenile} firmaID={firmaAbonelikYenileID} />}
+                {openAbonelikYenile && FirmaAbonelikYenileModal && <FirmaAbonelikYenileModal open={openAbonelikYenile} setOpen={setOpenAbonelikYenile} />}
               </Suspense>
 
               <AppRouting />

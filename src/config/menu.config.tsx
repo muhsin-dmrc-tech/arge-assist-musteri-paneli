@@ -20,17 +20,34 @@ export const ORTAK_MENU_SIDEBAR: TMenuConfig = [
   {
     title: 'Aylık Faaliyet Raporları',
     icon: 'package',
-    path: '/aylik-faaliyet-raporlari'
+    path: '/aylik-faaliyet-raporlari',
+    abonelik:'standart'
   },
   {
     title: 'Proje Başvuruları',
     icon: 'package',
-    path: '/proje-basvurulari'
+    path: '/proje-basvurulari',
   },
   {
     title: 'Projeler',
     icon: 'package',
-    path: '/projeler'
+    path: '/projeler',
+    abonelik:'standart'
+  },
+  {
+    title: 'Abonelik Planları',
+    icon: 'package',
+    path: '/abonelik-planlari'
+  },
+  {
+    title: 'Siparişler',
+    icon: 'basket',
+    path: '/siparisler'
+  },
+  {
+    title: 'Faturalar',
+    icon: 'document',
+    path: '/faturalar',
   },
 ]
 
@@ -40,7 +57,7 @@ export const ORTAK_MENU_SIDEBAR: TMenuConfig = [
 
 export const MENU_SIDEBAR: TMenuConfig = [
   ...ORTAK_MENU_SIDEBAR,
- 
+
 
 ];
 
@@ -64,16 +81,16 @@ export const ADMIN_MENU_SIDEBAR: TMenuConfig = [
     icon: 'package',
     path: '/admin-projeler'
   },
- /*  {
+  {
     title: 'Abonelik Planları',
     icon: 'package',
     path: '/statick/abonelik-planlari'
-  }, */
-  /* {
+  },
+  {
     title: 'Ödeme Bildirimleri',
     icon: 'notification',
     path: '/statick/odeme-bildirimleri'
-  }, */
+  },
   {
     title: 'Dönemler',
     icon: 'calendar-tick',
@@ -84,26 +101,26 @@ export const ADMIN_MENU_SIDEBAR: TMenuConfig = [
     icon: 'arrow-zigzag',
     path: '/statick/surecler'
   },
- /*  {
-    title: 'Teknokentler',
-    icon: 'cube-2',
-    path: '/statick/teknokentler'
-  }, */
+  /*  {
+     title: 'Teknokentler',
+     icon: 'cube-2',
+     path: '/statick/teknokentler'
+   }, */
   /* {
     title: 'Resmi Tatiller',
     icon: 'calendar',
     path: '/statick/resmi-tatiller'
   }, */
- /*  {
-    title: 'İzin Türleri',
-    icon: 'element-4',
-    path: '/statick/izin-turleri'
-  }, */
- /*  {
-    title: 'Muafiyet Tipleri',
-    icon: 'element-4',
-    path: '/statick/muafiyet-tipleri'
-  }, */
+  /*  {
+     title: 'İzin Türleri',
+     icon: 'element-4',
+     path: '/statick/izin-turleri'
+   }, */
+  /*  {
+     title: 'Muafiyet Tipleri',
+     icon: 'element-4',
+     path: '/statick/muafiyet-tipleri'
+   }, */
   /* {
     title: 'Çalışma Türleri',
     icon: 'element-10',
@@ -159,7 +176,7 @@ export const ADMIN_MENU_SIDEBAR: TMenuConfig = [
     icon: 'element-12',
     path: '/statick/logs'
   },
-   
+
 
 ];
 

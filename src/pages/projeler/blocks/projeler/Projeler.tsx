@@ -38,6 +38,12 @@ const Projeler = () => {
   const { currentUser } = useAuthContext();
 
 
+  if (!currentUser?.Abonelik) {
+    return <div className="flex items-center p-3 w-full justify-center bg-red-100 rounded-lg">
+      <h2 className="font-semibold text-red-700">Firmanıza ait aktif abonelik bulunamadı !</h2>
+    </div>
+  }
+
   useEffect(() => {
     if (currentUser?.id) {
       setServerSide(false)

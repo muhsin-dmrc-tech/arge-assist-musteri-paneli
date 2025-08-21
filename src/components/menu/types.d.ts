@@ -171,7 +171,7 @@ export interface IMenuItemConfig {
   trigger?: TMenuItemTrigger;
   children?: IMenuItemConfig[];
   childrenIndex?: number;
-  izinler?: string[];
+  abonelik?: string;
   rol?: string;
 }
 

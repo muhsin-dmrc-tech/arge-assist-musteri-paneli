@@ -60,7 +60,7 @@ const useAxiosInterceptors = (auth: any, saveAuth: any, setCurrentUser: any) => 
           // 442 Hatası - Firma Abonelik Hatası
           setMessage("Firma ya ait aktif abonelik bulunamadı.");
           console.log(error.response)
-          setAbonelikBitmis(Number(error.response?.data?.FirmaID ?? 0))
+          setAbonelikBitmis(Number(error.response?.data?.KullaniciID ?? 0))
         }
 
         return Promise.reject(error);
