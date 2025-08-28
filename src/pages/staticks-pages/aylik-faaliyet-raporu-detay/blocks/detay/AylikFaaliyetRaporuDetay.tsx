@@ -10,6 +10,7 @@ import { FarklılarListesiData } from './AylikFaaliyetRaporuDetayData';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { ProjeRaporuType, SGKTahakkuktype } from '@/pages/dokuman-yukleme-modulu/types';
 
+const GunDetayliRapor = lazy(() => import('./component/GunDetayliRapor'));
 const OnaysizSGKHizmet = lazy(() => import('./component/OnaysizSGKHizmet'));
 const OnaysizMuhtasarVePrimHizmet = lazy(() => import('./component/OnaysizMuhtasarVePrimHizmet'));
 const OnOnay = lazy(() => import('./component/OnOnay'));
@@ -213,6 +214,20 @@ const AylikFaaliyetRaporuDetay = () => {
   const tamamlananlar = item && item.Tamamlananlar ? JSON.parse(item.Tamamlananlar) : [] as number[];
 
   const itemsAccordion = [
+    item?.CalismaSureleri && {
+      title: 'SGK Çalışan Bildirgesi Gün Detaylı Rapor',
+      component: <GunDetayliRapor
+        fetchFile={fetchFile}
+        fetchFileAnalize={fetchFileAnalize}
+        CalismaSureleri={item?.CalismaSureleri}
+        SGKHizmet={item?.SGKHizmet ?? null}
+        MuhtasarVePrim={item?.MuhtasarVePrim ?? null}
+        handlePdfResponse={handlePdfResponse}
+        handleDownload={handleDownload}
+        gunDetayliData={gunDetayliData}
+        setGunDetayliData={setGunDetayliData}
+      />
+    },
     item?.SGKHizmet && {
       title: 'Onaysız SGK Hizmet Listesi',
       component: <OnaysizSGKHizmet
@@ -224,6 +239,7 @@ const AylikFaaliyetRaporuDetay = () => {
         handleDownload={handleDownload}
         sgkHizmetData={sgkHizmetData}
         setSgkHizmetData={setSgkHizmetData}
+        setGunDetayliData={setGunDetayliData}
       />
     },
     item?.MuhtasarVePrim && {
@@ -244,6 +260,7 @@ const AylikFaaliyetRaporuDetay = () => {
         setTerkinTutar={setTerkinTutar}
         projeKoduTespiti={projeKoduTespiti}
         setProjeKoduTespiti={setProjeKoduTespiti}
+        setGunDetayliData={setGunDetayliData}
       />
     },
     item?.OnayliSGKHizmet && {

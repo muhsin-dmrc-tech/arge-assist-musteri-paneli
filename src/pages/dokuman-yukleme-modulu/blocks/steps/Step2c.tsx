@@ -124,7 +124,7 @@ const Step2c = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
             return;
         }
 
-        const response = await handleSubmit({ stepId: 2, file, belgeAdi: 'SGKTahakkuk' });
+        const response = await handleSubmit({ stepId: 3, file, belgeAdi: 'SGKTahakkuk' });
 
 
         if (response.error) {

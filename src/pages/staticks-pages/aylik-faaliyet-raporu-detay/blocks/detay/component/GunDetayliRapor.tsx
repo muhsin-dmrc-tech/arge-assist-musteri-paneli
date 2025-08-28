@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Skeleton } from '@mui/material';
+import { Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Skeleton } from '@mui/material';
 import { FarklılarListesiData } from '../AylikFaaliyetRaporuDetayData';
 import { toast } from 'sonner';
 import { KeenIcon } from '@/components';
@@ -7,15 +7,15 @@ import { KeenIcon } from '@/components';
 interface StepProps {
     fetchFile: (filepath: string) => Promise<any>;
     fetchFileAnalize: (filepath: string) => Promise<any>;
-    SGKHizmet: string;
+    CalismaSureleri: string;
+    SGKHizmet: string | null;
     MuhtasarVePrim: string | null;
     handlePdfResponse: (blob: Blob | null, file: any) => void;
     handleDownload: (pdfDataSave: Blob | null, filename: any) => void;
-    sgkHizmetData: FarklılarListesiData[];
-    setSgkHizmetData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>
-    setGunDetayliData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>;
+    gunDetayliData: FarklılarListesiData[];
+    setGunDetayliData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>
 }
-const OnaysizSGKHizmet = ({ fetchFile, fetchFileAnalize, SGKHizmet, MuhtasarVePrim, setGunDetayliData, handlePdfResponse, handleDownload, sgkHizmetData, setSgkHizmetData }: StepProps) => {
+const GunDetayliRapor = ({ fetchFile, CalismaSureleri, handlePdfResponse, handleDownload, gunDetayliData, setGunDetayliData, SGKHizmet, fetchFileAnalize }: StepProps) => {
     const [loading, setLoading] = useState(false);
     const [pdfDataSave, setPdfDataSave] = useState<Blob | null>(null);
 
@@ -38,24 +38,22 @@ const OnaysizSGKHizmet = ({ fetchFile, fetchFileAnalize, SGKHizmet, MuhtasarVePr
         };
 
         processExistingFile();
-    }, [SGKHizmet]);
+    }, [CalismaSureleri]);
+
 
     useEffect(() => {
         const processExistingFile = async () => {
-            if (SGKHizmet && typeof SGKHizmet === 'string' && !MuhtasarVePrim) {
+            if (CalismaSureleri && typeof CalismaSureleri === 'string' && !SGKHizmet) {
                 try {
                     setLoading(true);
-                    const response = await fetchFileAnalize('SGKHizmet');
+                    const response = await fetchFileAnalize('CalismaSureleri');
                     if (!response.data) {
                         return
                     }
                     if (response.error) {
                         toast.error('PDF işlenirken bir hata oluştu');
-                    } else if (response.data.sgkHizmet && response.data.sgkHizmet.geciciListe && response.data.sgkHizmet.geciciListe.length > 0) {
-                        setSgkHizmetData(response.data.sgkHizmet.geciciListe ?? [])
-                        if (response.data?.calismaSureleri) {
-                            setGunDetayliData(response.data.calismaSureleri ?? [])
-                        }
+                    } else if (response.data.calismaSureleri && response.data.calismaSureleri.length > 0) {
+                        setGunDetayliData(response.data.calismaSureleri ?? [])
                     }
                 } catch (error) {
                     console.error('PDF işleme hatası:', error);
@@ -67,11 +65,7 @@ const OnaysizSGKHizmet = ({ fetchFile, fetchFileAnalize, SGKHizmet, MuhtasarVePr
         };
 
         processExistingFile();
-    }, [SGKHizmet, MuhtasarVePrim]);
-
-
-
-
+    }, [SGKHizmet, CalismaSureleri]);
     return (
         <>
             {loading ? (
@@ -96,13 +90,13 @@ const OnaysizSGKHizmet = ({ fetchFile, fetchFileAnalize, SGKHizmet, MuhtasarVePr
                 (<div className='w-full'>
 
                     <div className="flex items-center gap-2">
-                        <button onClick={() => handlePdfResponse(pdfDataSave, 'OnaysızSGKHizmetListesi.pdf')} className='btn btn-md btn-light'>Dosyayı Görüntüle <KeenIcon icon='graph' /></button>
-                        <button onClick={() => handleDownload(pdfDataSave, 'OnaysızSGKHizmetListesi')} className='btn btn-md btn-light'><KeenIcon icon='file-down' /></button>
+                        <button onClick={() => handlePdfResponse(pdfDataSave, 'SGKCalışanBildirgesiGunDetayliRapor.pdf')} className='btn btn-md btn-light'>Dosyayı Görüntüle <KeenIcon icon='graph' /></button>
+                        <button onClick={() => handleDownload(pdfDataSave, 'SGKCalışanBildirgesiGunDetayliRapor')} className='btn btn-md btn-light'><KeenIcon icon='file-down' /></button>
 
                     </div>
 
 
-                    {sgkHizmetData.length > 0 && (
+                    {gunDetayliData.length > 0 && (
 
                         <TableContainer component={Paper} sx={{ mt: 2 }}>
                             <Typography variant="h6" className='p-3'>
@@ -112,20 +106,22 @@ const OnaysizSGKHizmet = ({ fetchFile, fetchFileAnalize, SGKHizmet, MuhtasarVePr
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>#</TableCell>
-                                        <TableCell>S.Guvenlik No</TableCell>
-                                        <TableCell>Adı</TableCell>
-                                        <TableCell>Soyadı</TableCell>
-                                        <TableCell>Gün</TableCell>
+                                        <TableCell>TC Kimlik No</TableCell>
+                                        <TableCell>Personel</TableCell>
+                                        <TableCell>Başlangıç Tarihi</TableCell>
+                                        <TableCell>Gelir Vergi İstisnası Gün</TableCell>
+                                        <TableCell>Sigorta Primi İşveren Hissesi Gün</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {sgkHizmetData.map((row, index) => (
-                                        <TableRow key={index} className='hover:bg-gray-100'>
+                                    {gunDetayliData.map((row, index) => (
+                                        <TableRow key={index}>
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>{row.tcKimlikNo}</TableCell>
-                                            <TableCell>{row.ad}</TableCell>
-                                            <TableCell>{row.soyAd}</TableCell>
-                                            <TableCell>{row.Gun ?? 0}</TableCell>
+                                            <TableCell>{row.ad} {row.soyAd}</TableCell>
+                                            <TableCell>{row.baslangicTarihi}</TableCell>
+                                            <TableCell>{row.gelirVergiIstisnasi}</TableCell>
+                                            <TableCell>{row.sigortaPrimiIsverenHissesi}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -138,4 +134,4 @@ const OnaysizSGKHizmet = ({ fetchFile, fetchFileAnalize, SGKHizmet, MuhtasarVePr
     )
 }
 
-export default OnaysizSGKHizmet
+export default GunDetayliRapor

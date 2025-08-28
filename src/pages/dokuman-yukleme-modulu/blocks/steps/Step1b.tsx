@@ -30,9 +30,7 @@ const Step1b = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
     const [dosyaEklendi, setDosyaEklendi] = useState(false);
     const [farkliListesi, setFarkliListesi] = useState<FarklılarListesiData[]>([] as FarklılarListesiData[]);
     const [geciciListe, setGeciciListe] = useState<FarklılarListesiData[]>([]);
-    const { muhtasarMeta, setMuhtasarMeta,
-        projeRaporu, sgkHizmetListesi, muhtasarTableData, setSgkHizmetListesi,
-        setMuhtasarTableData } = useRapor()
+    const { muhtasarMeta, setMuhtasarMeta,projeRaporu, muhtasarTableData, setSgkHizmetListesi, setMuhtasarTableData,setCalismaSureleriData } = useRapor()
     const [yuklenenDosya, setYuklenenDosya] = useState<File | null>(null);
     const [checkedList, setCheckedList] = useState<any>({});
 
@@ -53,7 +51,6 @@ const Step1b = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
                             error: response.data.error
                         }]);
                         setTamamlananlar(prev => prev.filter(error => error.index !== 1));
-                        console.log(response?.data.muhtasar)
                         if (response.data?.muhtasar && response.data?.muhtasar.personelListesi && response.data?.muhtasar.personelListesi.farklilar?.length > 0) {
                             setGeciciListe(response.data?.muhtasar.personelListesi.geciciListe ?? [])
                             setFarkliListesi(response.data?.muhtasar.personelListesi.farklilar ?? [])
@@ -90,6 +87,9 @@ const Step1b = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
                             );
                         } else {
                             setMuhtasarTableData(response.data?.muhtasar?.personelListesi.geciciListe ?? [])
+                             if (response.data?.calismaSureleri) {
+                               setCalismaSureleriData(response.data.calismaSureleri)
+                            }
                             if (response.data?.sgkHizmet && response.data?.sgkHizmet?.geciciListe) {
                                 setSgkHizmetListesi(response.data.sgkHizmet.geciciListe ?? [])
                                 setErrors(prev => prev.filter(error => error.index !== 0));
@@ -153,7 +153,7 @@ const Step1b = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
 
     const handleSubmitFunc = async (file: File, checkedList?: any) => {
         setLoading(true)
-        const response = await handleSubmit({ stepId: 1, file, belgeAdi: 'MuhtasarVePrim', checkedList });
+        const response = await handleSubmit({ stepId: 2, file, belgeAdi: 'MuhtasarVePrim', checkedList });
         if (response.error) {
             setErrors(prev => [...prev, {
                 index: 1,

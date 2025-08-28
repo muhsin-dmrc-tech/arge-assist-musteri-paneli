@@ -13,9 +13,9 @@ export const ORTAK_MENU_SIDEBAR: TMenuConfig = [
     path: '/bildirim-arsivi'
   }, */
   {
-    title: 'Tesvik hesaplama modülü',
+    title: 'Teşvikli Bordro Hesaplama',
     icon: 'calculator',
-    path: '/tesvik-hesaplama-modul'
+    path: '/tesvikli-bordro-hesaplama'
   },
   {
     title: 'Aylık Faaliyet Raporları',

@@ -60,7 +60,7 @@ const AppRoutingSetup = (): ReactElement => {
 
           <Route path="/account/profil/settings" element={<AccountSettingsSidebarPage />} />
           <Route path="/bildirim-arsivi" element={<BildirimArsiviPage />} />
-          <Route path="/tesvik-hesaplama-modul" element={<TesvikHesaplamaModulPage />} />
+          <Route path="/tesvikli-bordro-hesaplama" element={<TesvikHesaplamaModulPage />} />
           <Route path="/aylik-faaliyet-raporlari" element={<AylikFaaliyetRaporlariPage />} />
           <Route path="/aylik-faaliyet-raporlari/edit/:itemId?" element={<DokumanYuklemePage />} />
           <Route path="/proje-basvurulari" element={<ProjeBasvuruPage />} />

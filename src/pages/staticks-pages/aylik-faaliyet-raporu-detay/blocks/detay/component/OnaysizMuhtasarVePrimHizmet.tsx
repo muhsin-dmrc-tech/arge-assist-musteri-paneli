@@ -12,7 +12,8 @@ interface StepProps {
     handleDownload: (pdfDataSave: Blob | null, filename: any) => void;
     muhtasarVePrimData: FarklılarListesiData[];
     sgkHizmetData: FarklılarListesiData[];
-    setMuhtasarVePrimData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>
+    setGunDetayliData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>;
+    setMuhtasarVePrimData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>;
     vergiTutar: string;
     setVergiTutar: (value: string) => void;
     terkinTutar: string;
@@ -21,7 +22,8 @@ interface StepProps {
     setProjeKoduTespiti: (value: string) => void;
     setSgkHizmetData: React.Dispatch<React.SetStateAction<FarklılarListesiData[]>>
 }
-const OnaysizMuhtasarVePrimHizmet = ({ fetchFile, fetchFileAnalize, setSgkHizmetData, sgkHizmetData, MuhtasarVePrim, handlePdfResponse, handleDownload, muhtasarVePrimData, setMuhtasarVePrimData, vergiTutar, setVergiTutar,
+const OnaysizMuhtasarVePrimHizmet = ({ fetchFile, fetchFileAnalize, setSgkHizmetData, sgkHizmetData,setGunDetayliData,
+     MuhtasarVePrim, handlePdfResponse, handleDownload, muhtasarVePrimData, setMuhtasarVePrimData, vergiTutar, setVergiTutar,
     terkinTutar, setTerkinTutar, projeKoduTespiti, setProjeKoduTespiti }: StepProps) => {
     const [loading, setLoading] = useState(false);
     const [pdfDataSave, setPdfDataSave] = useState<Blob | null>(null);
@@ -61,6 +63,9 @@ const OnaysizMuhtasarVePrimHizmet = ({ fetchFile, fetchFileAnalize, setSgkHizmet
                         toast.error('PDF işlenirken bir hata oluştu');
                     } else if (response.data?.muhtasar?.personelListesi && response.data?.muhtasar?.personelListesi?.farklilar && response.data?.muhtasar?.personelListesi?.farklilar?.length > 0) {
                         setMuhtasarVePrimData(response.data?.muhtasar?.personelListesi.geciciListe ?? [])
+                         if (response.data?.calismaSureleri) {
+                            setGunDetayliData(response.data.calismaSureleri ?? [])
+                        }
                         if (response.data?.sgkHizmet && response.data?.sgkHizmet?.geciciListe) {
                             setSgkHizmetData(response.data.sgkHizmet.geciciListe ?? [])
                         }

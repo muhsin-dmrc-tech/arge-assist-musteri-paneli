@@ -27,7 +27,7 @@ interface Step1Props {
 const Step1a = ({ fetchFile, setErrors, errors, tamamlananlar, handleSubmit, setTamamlananlar, adimSelect, goToNext }: Step1Props) => {
     const [loading, setLoading] = useState(false);
     const [dosyaEklendi, setDosyaEklendi] = useState(false);
-    const { projeRaporu, sgkHizmetListesi,setSgkHizmetListesi } = useRapor()
+    const { projeRaporu, sgkHizmetListesi, setSgkHizmetListesi, setCalismaSureleriData } = useRapor()
 
 
     useEffect(() => {
@@ -46,9 +46,12 @@ const Step1a = ({ fetchFile, setErrors, errors, tamamlananlar, handleSubmit, set
                             error: response.data.error
                         }]);
                         setTamamlananlar(prev => prev.filter(error => error.index !== 0));
-                    } else if(response.data.sgkHizmet && response.data.sgkHizmet.geciciListe && response.data.sgkHizmet.geciciListe.length > 0) {
+                    } else if (response.data.sgkHizmet && response.data.sgkHizmet.geciciListe && response.data.sgkHizmet.geciciListe.length > 0) {
                         setErrors(prev => prev.filter(error => error.index !== 0));
                         setSgkHizmetListesi(response.data.sgkHizmet.geciciListe ?? [])
+                        if (response.data?.calismaSureleri) {
+                            setCalismaSureleriData(response.data.calismaSureleri)
+                        }
                         setTamamlananlar(prev =>
                             produce(prev, draft => {
                                 const exists = draft.some(item => item.index === 0);
@@ -68,7 +71,7 @@ const Step1a = ({ fetchFile, setErrors, errors, tamamlananlar, handleSubmit, set
         };
 
         processExistingFile();
-    }, [projeRaporu?.SGKHizmet,dosyaEklendi]);
+    }, [projeRaporu?.SGKHizmet, dosyaEklendi]);
 
 
 
@@ -85,7 +88,7 @@ const Step1a = ({ fetchFile, setErrors, errors, tamamlananlar, handleSubmit, set
             return;
         }
 
-        const response = await handleSubmit({ stepId: 1, file, belgeAdi: 'SGKHizmet' });
+        const response = await handleSubmit({ stepId: 2, file, belgeAdi: 'SGKHizmet' });
 
 
         if (response.error) {

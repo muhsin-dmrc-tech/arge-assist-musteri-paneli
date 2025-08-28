@@ -1,11 +1,9 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useRapor } from '../../DokumanYuklemeContextType';
 import { Accordion, AccordionItem } from '@/components/accordion';
 import { KeenIcon } from '@/components';
-import { DonemType, handleSubmitPropsType } from '../../types';
-import { useParams } from 'react-router';
+import { handleSubmitPropsType } from '../../types';
 
 
 const Step1a = lazy(() => import('./Step1a'));
@@ -17,11 +15,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 interface Step1Props {
     fetchFile: (filepath: string) => Promise<any>;
     handleSubmit: ({ stepId, file, belgeAdi, checkedList, adim }: handleSubmitPropsType) => Promise<any>;
-    donemler: DonemType[]
 }
 
-const Step1 = ({ fetchFile, handleSubmit, donemler }: Step1Props) => {
-    const { itemId } = useParams();
+const Step1 = ({ fetchFile, handleSubmit }: Step1Props) => {
     const [errors, setErrors] = useState<Array<{ index: number, error: string }>>([]);
     const [tamamlananlar, setTamamlananlar] = useState<Array<{ index: number }>>([]);
     const { projeRaporu, setitemValue, itemValue } = useRapor()
@@ -91,21 +87,6 @@ const Step1 = ({ fetchFile, handleSubmit, donemler }: Step1Props) => {
     return (
         <div className="flex flex-col gap-4">
             <label>Onaysız Dökümanlar</label>
-
-            <div className="flex flex-col gap-1">
-                <label>Dönem Seç</label>
-                {donemler.length < 1 ? <span className='text-red-700'>Hiç dönem bulunamadı.</span> : ''}
-                <Select disabled={itemId ? true : false} value={itemValue.DonemID > 0 ? itemValue.DonemID.toString() : ''} onValueChange={(value) => setitemValue({ ...itemValue, DonemID: Number(value) })} required>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Dönem Seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {donemler?.map((item: any) => (<SelectItem key={item.DonemID} value={item.DonemID?.toString()}>{item?.DonemAdi}</SelectItem>))}
-
-                    </SelectContent>
-                </Select>
-            </div>
-
             <Accordion
                 allowMultiple={false}
                 activeIndex={activeIndex}

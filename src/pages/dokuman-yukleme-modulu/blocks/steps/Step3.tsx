@@ -1,6 +1,4 @@
-import * as pdfjsLib from 'pdfjs-dist';
 import { KeenIcon } from '@/components';
-import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -11,7 +9,6 @@ import { Skeleton } from '@mui/material';
 import { useRapor } from '../../DokumanYuklemeContextType';
 import { handleSubmitPropsType, SurecKayitlariType } from '../../types';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 interface Step3Props {
     handleSubmit: ({stepId, belgeAdi}:handleSubmitPropsType) => Promise<any>;
 }
@@ -19,7 +16,7 @@ interface Step3Props {
 
 
 const Step3 = ({ handleSubmit }: Step3Props) => {
-	const { projeRaporu, itemValue, setitemValue, currentStep } = useRapor();
+	const { projeRaporu, currentStep } = useRapor();
 	const [surecKayitlari, setSurecKayitlari] = useState<SurecKayitlariType[]>([]);
 	const { currentUser } = useAuthContext();
 	const API_URL = import.meta.env.VITE_APP_API_URL;
@@ -63,7 +60,7 @@ const Step3 = ({ handleSubmit }: Step3Props) => {
 	const handleSubmitFunc = async () => {
 		if (loading) return
 		setLoading(true)
-		const response = await handleSubmit({ stepId: 3, belgeAdi: 'OnOnay' });
+		const response = await handleSubmit({ stepId: 4, belgeAdi: 'OnOnay' });
 
 		setLoading(false)
 	}

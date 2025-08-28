@@ -30,9 +30,7 @@ const Step2b = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
     const [dosyaEklendi, setDosyaEklendi] = useState(false);
     const [farkliListesi, setFarkliListesi] = useState<FarklılarListesiData[]>([] as FarklılarListesiData[]);
     const [geciciListe, setGeciciListe] = useState<FarklılarListesiData[]>([]);
-    const { onayliMuhtasarMeta, setOnayliMuhtasarMeta,
-        projeRaporu, onayliMuhtasarTableData, setOnayliSgkHizmetListesi,
-        setOnayliMuhtasarTableData } = useRapor()
+    const { onayliMuhtasarMeta, setOnayliMuhtasarMeta, projeRaporu, onayliMuhtasarTableData, setOnayliSgkHizmetListesi, setOnayliMuhtasarTableData } = useRapor()
     const [yuklenenDosya, setYuklenenDosya] = useState<File | null>(null);
     const [checkedList, setCheckedList] = useState<any>({});
 
@@ -155,7 +153,7 @@ const Step2b = ({ fetchFile, setErrors, errors, tamamlananlar, setTamamlananlar,
 
     const handleSubmitFunc = async (file: File, checkedList?: any) => {
         setLoading(true)
-        const response = await handleSubmit({ stepId: 2, file, belgeAdi: 'OnayliMuhtasarVePrim', checkedList });
+        const response = await handleSubmit({ stepId: 3, file, belgeAdi: 'OnayliMuhtasarVePrim', checkedList });
         if (response.error) {
             setErrors(prev => [...prev, {
                 index: 1,

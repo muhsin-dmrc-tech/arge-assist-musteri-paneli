@@ -156,6 +156,7 @@ export interface ProjeRaporuType {
     FirmaAdi:string
   };
   SurecSirasi: number;
+  CalismaSureleri?: string;
   SGKHizmet?: string;
   OnayliSGKHizmet?: string;
   MuhtasarVePrim?: string;

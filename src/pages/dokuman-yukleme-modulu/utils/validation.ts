@@ -21,13 +21,21 @@ const step1 = (payload: ValidationPayload): ValidationResult => {
   if (!itemValue.DonemID || itemValue.DonemID < 1) {
     return { isValid: false, error: 'Lütfen bir dönem seçimi yapın' };
   }
+  if (!projeRaporu || !projeRaporu.CalismaSureleri) {
+    return { isValid: false, error: 'Devam edebilmeniz için Ar-Ge Çalışma Süreleri Raporunu yüklemeniz gerekmektedir.' };
+  }
+  return { isValid: true, error: '' };
+};
+
+const step2 = (payload: ValidationPayload): ValidationResult => {
+  const { projeRaporu } = payload;
   if (!projeRaporu || !projeRaporu.SGKHizmet || !projeRaporu.MuhtasarVePrim) {
     return { isValid: false, error: 'Devam edebilmeniz için geçerli belgeleri yüklemeniz gerekmektedir.' };
   }
   return { isValid: true, error: '' };
 };
 
-const step2 = (payload: ValidationPayload): ValidationResult => {
+const step3 = (payload: ValidationPayload): ValidationResult => {
   const { projeRaporu } = payload;
 
   if (!projeRaporu || !projeRaporu.OnayliSGKHizmet || !projeRaporu.OnayliMuhtasarVePrim || !projeRaporu.SGKTahakkuk) {
@@ -36,7 +44,7 @@ const step2 = (payload: ValidationPayload): ValidationResult => {
   return { isValid: true, error: '' };
 };
 
-const step3 = (payload: ValidationPayload): ValidationResult => {
+const step4 = (payload: ValidationPayload): ValidationResult => {
   const { projeRaporu } = payload;
 
   if (!projeRaporu || (projeRaporu.Durum).toLocaleUpperCase('tr-TR') === ('Onay Sürecinde').toLocaleUpperCase('tr-TR')) {
@@ -52,7 +60,8 @@ const step3 = (payload: ValidationPayload): ValidationResult => {
 export const stepValidations = {
   step1,
   step2,
-  step3
+  step3,
+  step4
 } as const;
 
 // Tip güvenliği için ValidationResult tipini de export et

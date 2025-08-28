@@ -88,7 +88,7 @@ const Step2a = ({ fetchFile, setErrors, errors, tamamlananlar, handleSubmit, set
             return;
         }
 
-        const response = await handleSubmit({ stepId: 2, file, belgeAdi: 'OnayliSGKHizmet' });
+        const response = await handleSubmit({ stepId: 3, file, belgeAdi: 'OnayliSGKHizmet' });
 
 
         if (response.error) {

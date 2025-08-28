@@ -5,32 +5,44 @@ import { KeenIcon } from '@/components';
 interface PropsType {
     item: { id: number; PersonelAdi: string; ayliklar: TeknoKentHesaplama[]; },
     personelSil: () => void;
+    open:boolean;
+    setOpen: () => void;
 }
 
-const BordroItem = ({ item, personelSil }: PropsType) => {
-    const [open, setOpen] = useState(false);
-
+const BordroItem = ({ item, personelSil,open,setOpen }: PropsType) => {
     return (
         <div className='border border-gray-200 rounded-xl shadow-md bg-white'>
-            <button onClick={() => setOpen(!open)} className="p-3 flex w-full items-center justify-between relative pb-6">
-                <h3 className='font-semibold'>{item.PersonelAdi}</h3>
-                <h3>{item.ayliklar && item.ayliklar[0] ? (item.ayliklar[0]?.KanunNo === '4691' ? '(4691) Teknokent Projeleri İçin Çalışan' :
-                    item.ayliklar[0]?.KanunNo === '5746' ? '(5746) Tubitak projeleri, Arge ve Tasarım Merkezleri İçin Çalışan' : 'Standart Çalışan') : 'Hesaplama Yapılamadı'}</h3>
-                <div className="flex gap-4 items-center">
-                    <button onClick={personelSil} className='text-red-500'><KeenIcon icon='trash' /></button>
-                </div>
+            <div className="p-3 flex w-full items-center justify-between relative pb-6">
+                <button onClick={() => setOpen()} className="flex w-full items-center justify-between">
+                    <h3 className='font-semibold'>{item.PersonelAdi}</h3>
+                    <h3>{item.ayliklar && item.ayliklar[0] ? (item.ayliklar[0]?.KanunNo === '4691' ? '(4691) Teknokent Projeleri İçin Çalışan' :
+                        item.ayliklar[0]?.KanunNo === '5746' ? '(5746) Tubitak projeleri, Arge ve Tasarım Merkezleri İçin Çalışan' : 'Standart Çalışan') : 'Hesaplama Yapılamadı'}</h3>
 
-                <div className="absolute right-0 -bottom-2 flex flex-col items-end pe-10 w-full">
-                    {/* İkon */}
+
+                </button>
+
+                <button onClick={() => setOpen()} className="absolute right-0 -bottom-2 flex flex-col items-end pe-10 w-full">
+
                     <KeenIcon icon={open ? 'up' : 'down'} className="text-4xl text-gray-200 bg-white z-10" />
-                    {/* Border çizgisi */}
+
                     <div className="w-full border-b border-gray-200 absolute left-0 top-1/2 z-0"></div>
+                </button>
+                <div className="flex gap-4 items-center justify-end w-20">
+                    <button onClick={() => personelSil()} className='text-red-500'><KeenIcon icon='trash' /></button>
                 </div>
-            </button>
+            </div>
 
-
-
-            {open &&
+            <div
+                style={{
+                    maxHeight: open ? 2000 : 0,
+                    opacity: open ? 1 : 0,
+                    overflow: 'hidden',
+                    transition: open
+                        ? 'max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                        : 'max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                aria-hidden={!open}
+            >
                 <div className="p-3 kt-card-content">
                     <div className="grid datatable-initialized">
                         <div className="relative w-full scrollable-x-auto border rounded-md">
@@ -39,6 +51,7 @@ const BordroItem = ({ item, personelSil }: PropsType) => {
                                     <tr className="bg-gray-100 border-b-2">
                                         <th className="p-2 text-center text-xs font-bold border-r">Ay</th>
                                         <th className="p-2 text-center text-xs font-bold border-r">Aylık Brüt Ücret</th>
+                                        <th className="p-2 text-center text-xs font-bold border-r">Bodroya Esas Brüt</th>
                                         <th className="p-2 text-center text-xs font-bold border-r">Gün Sayısı</th>
                                         <th className="p-2 text-center text-xs font-bold border-r">Sgk Matrahı</th>
                                         <th className="p-2 text-center text-xs font-bold border-r">BES Oranı</th>
@@ -72,6 +85,7 @@ const BordroItem = ({ item, personelSil }: PropsType) => {
                                         <tr key={data.Ay} className="border-b hover:bg-gray-50 even:bg-gray-25">
                                             <td className="p-2 text-xs text-gray-700 text-center font-bold border-r">{data.Ay}</td>
                                             <td className="p-2 text-xs text-center font-medium border-r">{data.AylikBrutUcret?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
+                                            <td className="p-2 text-xs text-center font-medium border-r">{data.BrutUcret?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
                                             <td className="p-2 text-xs text-center font-medium border-r">{data.BordroGunSayisi}</td>
                                             <td className="p-2 text-xs text-center font-medium border-r">{data.SGKMatrahi?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
                                             <td className="p-2 text-xs text-center font-medium border-r">{data.BESOrani}</td>
@@ -104,6 +118,7 @@ const BordroItem = ({ item, personelSil }: PropsType) => {
                                     <tr className="border-b hover:bg-gray-50 even:bg-gray-25 font-bold bg-gray-200">
                                         <td className="p-2 text-xs text-gray-900 text-center font-bold border-r">Yıl Toplamı</td>
                                         <td className="p-2 text-xs text-center text-gray-900 font-medium border-r">{item.ayliklar.reduce((sum, d) => sum + (d.AylikBrutUcret || 0), 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
+                                        <td className="p-2 text-xs text-center text-gray-900 font-medium border-r">{item.ayliklar.reduce((sum, d) => sum + (d.BrutUcret || 0), 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
                                         <td className="p-2 text-xs text-center text-gray-900 font-medium border-r"></td>
                                         <td className="p-2 text-xs text-center text-gray-900 font-medium border-r">{item.ayliklar.reduce((sum, d) => sum + (d.SGKMatrahi || 0), 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
                                         <td className="p-2 text-xs text-center text-gray-900 font-medium border-r"></td>
@@ -135,12 +150,13 @@ const BordroItem = ({ item, personelSil }: PropsType) => {
                             </table>
                         </div>
                     </div>
-                </div>}
+                </div>
+            </div>
 
             <div className='p-3'>
                 <div className='grid grid-cols-12 gap-4'>
                     <div className="col-span-12 md:col-span-3">
-                        <div className="text-sm text-gray-600">Toplam Teşvik</div>
+                        <div className="text-sm text-gray-600">Teknokent Teşvik Toplamı</div>
                         <div className="text-lg font-bold text-green-600">
                             {item.ayliklar.reduce((sum, item) => sum + item.ToplamTesvik, 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
                         </div>

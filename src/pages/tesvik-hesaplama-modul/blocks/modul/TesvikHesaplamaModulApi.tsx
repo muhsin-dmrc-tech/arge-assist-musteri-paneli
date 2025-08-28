@@ -2,15 +2,15 @@
 import { useEffect, useState } from 'react';
 import { DefaultTooltip, KeenIcon } from '@/components';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@mui/material';
 import AlertDialog from '@/components/alert-modal/AlertDialog';
 import { Input } from '@/components/ui/input';
 import * as XLSX from 'xlsx';
 import { handleParaMaskeChange } from '@/components/helpers/numberFormatFunctions';
-import clsx from 'clsx';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import BordroItem from './BordroItem';
+import { handlePdfDownload } from './pdfDownload';
+import { Button } from '@mui/material';
 
 interface ButtonProps {
   text: string;
@@ -57,7 +57,7 @@ export interface TeknoKentHesaplama {
   AsgUcretDamgaVergiIstisnasi: number,
   DamgaVergisiTesvigi: number,
   OdenecekDamgaVergisi: number,
-  NetMaasAGIHaric: number,
+  NetTesviksizMaas: number,
   NetOdenen: number,
   ToplamMaliyet: number,
   ToplamTesvik: number
@@ -115,24 +115,22 @@ const initialValue: IITemsTypesData = {
 }
 
 const TesvikHesaplamaModul = () => {
-  const [error, setError] = useState<string | null>(null);
   const [pageError, setPageError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [submitVisible, setSubmitVisible] = useState(false);
   const [alertModalData, setAlertModalData] = useState<AlertDialogProps>({} as AlertDialogProps);
   const [itemValue, setItemValue] = useState<IITemsTypesData>(initialValue);
   const [nextId, setNextId] = useState(1);
+  const [openItem, setOpenItem] = useState(1);
   const API_URL = import.meta.env.VITE_APP_API_URL;
   // Her personel için 12 aylık veri tutan yapı
   const [personelAylikListesi, setPersonelAylikListesi] = useState<{ id: number; PersonelAdi: string; ayliklar: TeknoKentHesaplama[]; }[]>([]);
-
+  const [yilToplamTesvik, setYilToplamTesvik] = useState(0);
+  const [yilToplamMaliyet, setYilToplamMaliyet] = useState(0);
 
 
 
   const temizleFunc = () => {
-    setError(null)
-    setSuccessMessage(null)
     setPageError(null)
     setPersonelAylikListesi([]);
     setItemValue(initialValue)
@@ -140,13 +138,13 @@ const TesvikHesaplamaModul = () => {
 
 
   const hesaplaVeEkle = async () => {
-    if(submitVisible) return;
+    if (submitVisible) return;
     if (!itemValue.PersonelAdi) {
-      setError('Personel adı gereklidir')
+      toast.error('Personel adı gereklidir')
       return
     }
     if (!itemValue.GirilenDeger) {
-      setError('Hesaplanacak tutar gereklidir')
+      toast.error("Hesaplanacak tutar gereklidir");
       return
     }
     setSubmitVisible(true)
@@ -155,7 +153,8 @@ const TesvikHesaplamaModul = () => {
       if (response.status === 201) {
         setNextId(prev => prev + 1)
         if (response.data && response.data.id) {
-          setPersonelAylikListesi(prev => [...prev, response.data])
+          setPersonelAylikListesi(prev => [response.data, ...prev])
+          setOpenItem(1)
         }
       } else {
         toast.error("İşlem yapılırken hata oluştu Bordro hesaplama");
@@ -163,15 +162,15 @@ const TesvikHesaplamaModul = () => {
     } catch (error) {
       console.error(error);
       toast.error("İşlem yapılırken hata oluştu Bordro hesaplama");
-    }finally{
-       setSubmitVisible(false)
+    } finally {
+      setSubmitVisible(false)
     }
   }
 
 
   const personelSil = (id: number) => {
     setPersonelAylikListesi(prev => prev.filter(item => item.id !== id));
-    setSuccessMessage('Personel listeden silindi.');
+    toast.success('Personel listeden silindi.');
   };
 
 
@@ -196,7 +195,7 @@ const TesvikHesaplamaModul = () => {
       excelRows.push({
         'Ay': 'Personel Adı:',
         'Aylık Brüt Ücret': personel.PersonelAdi,
-        'Gün Sayısı':'Çalışma Türü:',
+        'Gün Sayısı': 'Çalışma Türü:',
         'Sgk Matrahı': calismaTuru,
       });
 
@@ -338,7 +337,27 @@ const TesvikHesaplamaModul = () => {
     XLSX.writeFile(wb, `Teknokent_Tesvik_Hesaplama_${new Date().toLocaleDateString('tr-TR')}.xlsx`);
   };
 
+  const tumAylar = [
+    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+  ];
 
+  // Toplamları hesapla
+  const yillikToplamTesvik = personelAylikListesi.reduce(
+    (acc, personel) => acc + personel.ayliklar.reduce((sum, item) => sum + item.ToplamTesvik, 0),
+    0
+  );
+
+  const yillikToplamMaliyet = personelAylikListesi.reduce(
+    (acc, personel) => acc + personel.ayliklar.reduce((sum, item) => sum + item.ToplamMaliyet, 0),
+    0
+  );
+
+  // State’e set et (liste değişince hesaplanır)
+  useEffect(() => {
+    setYilToplamTesvik(yillikToplamTesvik);
+    setYilToplamMaliyet(yillikToplamMaliyet);
+  }, [personelAylikListesi]);
 
 
 
@@ -355,19 +374,24 @@ const TesvikHesaplamaModul = () => {
       {pageError ?
         <div className="text-red-700 w-full bg-red-100 p-1 rounded-lg flex items-center">
           <KeenIcon icon={'information-2'} />
-          <span>{typeof error === 'string' ? error : JSON.stringify(pageError)}</span></div>
+          <span>{typeof pageError === 'string' ? pageError : JSON.stringify(pageError)}</span></div>
         :
         <div className='max-w-[100%]'>
-          <div className="card bg-gray-50">
-            <div className="card-header">
-              <h3 className="text-lg font-semibold mb-2">Teknokent Teşvik Hesaplama</h3>
+          <div className="card bg-gray-50 relative">
+            {submitVisible && (
+              <div className="absolute inset-0 bg-black/50 z-50 flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-4"></div>
+                <span className="text-white text-lg font-medium">Hesaplanıyor...</span>
+              </div>
+            )}
+            {/*  <div className="card-header">
               {error && <div className="text-red-700 flex items-center gap-2 mb-2">
                 <KeenIcon icon={'information-2'} />
                 <span>{typeof error === 'string' ? error : JSON.stringify(error)}</span></div>}
               {successMessage && <div className="text-lime-600 flex items-center gap-2 mb-2">
                 <KeenIcon icon={'information-1'} style="solid" className="text-lg" />
                 <span>{successMessage}</span></div>}
-            </div>
+            </div> */}
 
             <div className="card-body flex flex-col gap-4">
 
@@ -423,27 +447,6 @@ const TesvikHesaplamaModul = () => {
 
 
 
-                <div className="col-span-12 md:col-span-2">
-                  <div className="">Küm.Gel.Ver. Matrahı</div>
-                  <Input
-                    className="w-full"
-                    value={itemValue.KumGelirVergiMatrahi}
-                    required
-                    placeholder="Küm.Gel.Ver. Matrahı"
-                    onChange={(e) => setItemValue({ ...itemValue, KumGelirVergiMatrahi: handleParaMaskeChange(e.target.value) })}
-                  />
-                </div>
-
-                <div className="col-span-12 md:col-span-2">
-                  <div className="">Asg.Ücr. Küm.İst.Matr.</div>
-                  <Input
-                    className="w-full"
-                    value={itemValue.AsgUcretKumIstisnaMatrahi}
-                    required
-                    placeholder="Asg.Ücr. Küm.İst.Matr."
-                    onChange={(e) => setItemValue({ ...itemValue, AsgUcretKumIstisnaMatrahi: handleParaMaskeChange(e.target.value) })}
-                  />
-                </div>
 
                 <div className="col-span-12 md:col-span-3">
                   <div className="">Personel Adı</div>
@@ -496,7 +499,7 @@ const TesvikHesaplamaModul = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {
-                        ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'].map(ay =>
+                        tumAylar.map(ay =>
                           <SelectItem key={ay} value={ay}>{ay}</SelectItem>)
                       }
                     </SelectContent>
@@ -582,7 +585,7 @@ const TesvikHesaplamaModul = () => {
                         />
                       </div>
                       <div className='col-span-12 md:col-span-2'>
-                        <div className="">Eğitim Durumu (Teşvik Oranı)</div>
+                        <div className="">Eğitim Durumu</div>
                         <Select value={itemValue.EgitimDurumu ?? 'diger'} onValueChange={(value: 'doktora' | 'yuksek-lisans') => setItemValue({ ...itemValue, EgitimDurumu: value })}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Eğitim Durumu Seç" />
@@ -648,24 +651,22 @@ const TesvikHesaplamaModul = () => {
                     />
                     <span className="text-sm">BES Kesintisi Uygula</span>
                   </label>
-
-                  {itemValue.BESKesintisiUygula &&
-                    <div className="flex gap-1 items-center">
-                      <div className="text-sm">BES Yüzdesi:</div>
-                      <Input
-                        className=" max-w-[50px]"
-                        value={itemValue.BesYuzdesi}
-                        required
-                        placeholder="BES Yüzdesi"
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value);
-                          if (!isNaN(value) && value >= 0 && value <= 99) {
-                            setItemValue({ ...itemValue, BesYuzdesi: value });
-                          }
-                        }}
-                      />
-                    </div>
-                  }
+                  <div className="flex gap-1 items-center">
+                    <div className="text-sm">BES Yüzdesi:</div>
+                    %<Input
+                      className=" max-w-[50px]"
+                      value={itemValue.BesYuzdesi}
+                      disabled={!itemValue.BESKesintisiUygula}
+                      required
+                      placeholder="BES Yüzdesi"
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 0 && value <= 99) {
+                          setItemValue({ ...itemValue, BesYuzdesi: value });
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
 
 
@@ -677,8 +678,7 @@ const TesvikHesaplamaModul = () => {
                         className="checkbox checkbox-sm"
                         type="checkbox"
                         checked={itemValue.BesPuanlikIndirimUygula}
-                        onChange={(e) => setItemValue({ ...itemValue, BesPuanlikIndirimUygula: e.target.checked, DortPuanlikIndirimUygula: e.target.checked ? false : itemValue.DortPuanlikIndirimUygula })}
-                        disabled={itemValue.DortPuanlikIndirimUygula}
+                        onChange={(e) => setItemValue({ ...itemValue, BesPuanlikIndirimUygula: e.target.checked, DortPuanlikIndirimUygula: false })}
                       />
                       <span className="text-sm">SGK 5 Puanlık İndirim (5510/81. madde)</span>
                     </label>
@@ -687,8 +687,7 @@ const TesvikHesaplamaModul = () => {
                         className="checkbox checkbox-sm"
                         type="checkbox"
                         checked={itemValue.DortPuanlikIndirimUygula}
-                        onChange={(e) => setItemValue({ ...itemValue, DortPuanlikIndirimUygula: e.target.checked, BesPuanlikIndirimUygula: e.target.checked ? false : itemValue.BesPuanlikIndirimUygula })}
-                        disabled={itemValue.BesPuanlikIndirimUygula}
+                        onChange={(e) => setItemValue({ ...itemValue, DortPuanlikIndirimUygula: e.target.checked, BesPuanlikIndirimUygula: false })}
                       />
                       <span className="text-sm">SGK 4 Puanlık İndirim (Diğer Sektörler)</span>
                     </label>
@@ -705,9 +704,6 @@ const TesvikHesaplamaModul = () => {
                     />
                     <span className="text-sm">SSK Teşviği Uygula</span>
                   </label>
-                </div>
-
-                <div className="col-span-12 md:col-span-3">
                   <label className="checkbox-group flex items-center gap-2">
                     <input
                       className="checkbox checkbox-sm"
@@ -718,6 +714,39 @@ const TesvikHesaplamaModul = () => {
                     <span className="text-sm">Asg.Ücr.İst. Uygula</span>
                   </label>
                 </div>
+
+
+
+                {itemValue.BaslangicAyi !== 'Ocak' &&
+                  <>
+                    <div className="col-span-12 text-info">
+                      <KeenIcon icon="information-1" style="solid" className="text-lg leading-0 me-2" />
+                      <span>Personel {itemValue.BaslangicAyi} ayında işe başlamamışsa sonuçların doğru çıkması için lütfen aşağıdaki alanı {tumAylar[tumAylar.findIndex(a => a === itemValue.BaslangicAyi) - 1] ?? ''} ayı verileri ile doldurun.</span>
+                    </div>
+                    <div className="col-span-12 md:col-span-2">
+                      <div className="">Küm.Gel.Ver. Matrahı</div>
+                      <Input
+                        className="w-full"
+                        value={itemValue.KumGelirVergiMatrahi}
+                        required
+                        placeholder="Küm.Gel.Ver. Matrahı"
+                        onChange={(e) => setItemValue({ ...itemValue, KumGelirVergiMatrahi: handleParaMaskeChange(e.target.value) })}
+                      />
+                    </div>
+
+                  
+                    <div className="col-span-12 md:col-span-2">
+                      <div className="">Asg.Ücr. Küm.İst.Matr.</div>
+                      <Input
+                        className="w-full"
+                        value={itemValue.AsgUcretKumIstisnaMatrahi}
+                        required
+                        placeholder="Asg.Ücr. Küm.İst.Matr."
+                        onChange={(e) => setItemValue({ ...itemValue, AsgUcretKumIstisnaMatrahi: handleParaMaskeChange(e.target.value) })}
+                      />
+                    </div>
+                  </>
+                }
 
 
 
@@ -740,32 +769,63 @@ const TesvikHesaplamaModul = () => {
             <div className='flex flex-col gap-4'>
               <div className="card mt-4 max-w-[100%] scrollable-x-auto">
                 <div className="card-header flex justify-between items-center">
-                  <h5>Personel Listesi ({personelAylikListesi.length} Kişi)</h5>
+
+                  <h5>Genel Toplamlar</h5>
+
                   <div className="flex gap-2">
-                    <Button
-                      className="text-white bg-red-600 hover:bg-red-700"
-                      variant="contained"
+                    <button
+                      className="btn btn-danger"
                       onClick={() => temizleFunc()}
                       disabled={!personelAylikListesi.length}
                     >
                       Listeyi Temizle
-                    </Button>
-                    <Button
-                      className="text-white"
-                      variant="contained"
+                    </button>
+                    <button
+                      className="btn btn-light"
                       onClick={handleExcelDownload}
                       disabled={!personelAylikListesi.length}
                     >
                       Excel İndir
-                    </Button>
+                    </button>
+                    <button
+                      className="btn btn-light"
+                      onClick={()=>handlePdfDownload(personelAylikListesi)}
+                      disabled={!personelAylikListesi.length}
+                    >
+                      PDF İndir
+                    </button>
+                  </div>
+
+
+                </div>
+                <div className='grid grid-cols-12 gap-4 p-4'>
+                  <div className="col-span-12 md:col-span-3">
+                    <div className="text-sm text-gray-600">Personel Sayısı</div>
+                    <div className="text-lg font-bold text-green-600">
+                      {personelAylikListesi.length}
+                    </div>
+                  </div>
+                  <div className="col-span-12 md:col-span-3">
+                    <div className="text-sm text-gray-600">Teknokent Teşviki</div>
+                    <div className="text-lg font-bold text-green-600">
+                      {yilToplamTesvik.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+                    </div>
+                  </div>
+
+                  <div className="col-span-12 md:col-span-3">
+                    <div className="text-sm text-gray-600">Toplam Maliyet</div>
+                    <div className="text-lg font-bold text-red-600">
+                      {yilToplamMaliyet.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+                    </div>
                   </div>
                 </div>
               </div>
               {personelAylikListesi.map((personel, index) => (
                 <div key={index}>
-                  <BordroItem item={personel} personelSil={() => personelSil(personel.id)} />
+                  <BordroItem item={personel} personelSil={() => personelSil(personel.id)} open={openItem === index + 1} setOpen={() => setOpenItem(openItem === index + 1 ? 0 : index + 1)} />
                 </div>
-              ))}
+              )
+              )}
             </div>
           )}
         </div>

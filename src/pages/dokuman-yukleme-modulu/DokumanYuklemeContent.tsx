@@ -12,6 +12,7 @@ import { DonemType, handleSubmitPropsType, ProjeRaporuType } from './types';
 import { useParams } from 'react-router';
 
 
+const Step = lazy(() => import('./blocks/steps/Step'));
 const Step1 = lazy(() => import('./blocks/steps/Step1'));
 const Step2 = lazy(() => import('./blocks/steps/Step2'));
 const Step3 = lazy(() => import('./blocks/steps/Step3'));
@@ -22,16 +23,17 @@ const DokumanYuklemeContent = () => {
   const { itemId } = useParams();
   const API_URL = import.meta.env.VITE_APP_API_URL;
   const { auth, currentUser } = useAuthContext();
-  const {
-    projeRaporu, setFile, file, submitVisible, setSubmitVisible,
-    setSuccessMessage, successMessage, setPersoneller, itemValue, setProjeRaporu, pageError, setSGKTahakkuk, setOnayliMuhtasarTableData, setOnayliSgkHizmetListesi,
-    setitemValue, setRaporHatalar, setSgkHizmetListesi, setMuhtasarTableData, error, stepErrors, tamamlananAdimlar,
-    setError, setStepErrors, currentStep, sgkHizmetListesi, muhtasarTableData, setTamamlananAdimlar,
-    muafiyetTableData, setCurrentStep, onayliMuhtasarTableData, onayliSgkHizmetListesi, setSeciliDonem, seciliDonem,
+  const { projeRaporu, setFile, file, submitVisible, setSubmitVisible, setSuccessMessage, successMessage, itemValue, setProjeRaporu, pageError, 
+    setSGKTahakkuk, setOnayliMuhtasarTableData, setOnayliSgkHizmetListesi, setitemValue, setRaporHatalar, setSgkHizmetListesi, setMuhtasarTableData, error, stepErrors,
+    setError, setStepErrors, currentStep,setTamamlananAdimlar, setCurrentStep, seciliDonem,
   } = useRapor()
 
   const [donemler, setDonemler] = useState<DonemType[]>([]);
-
+  if (!currentUser?.Abonelik) {
+    return <div className="flex items-center p-3 w-full justify-center bg-red-100 rounded-lg">
+      <h2 className="font-semibold text-red-700">Firmanıza ait aktif abonelik bulunamadı !</h2>
+    </div>
+  }
 
   const getDonemler = async () => {
     try {
@@ -70,10 +72,14 @@ const DokumanYuklemeContent = () => {
       if (response.data) {
         const projerapor = response.data;
         setProjeRaporu(projerapor)
-        if ((projerapor.SurecSirasi > 1 && (projerapor.SGKHizmet && projerapor.MuhtasarVePrim)) || (projerapor.SurecSirasi > 2 && (projerapor.OnayliSGKHizmet && projerapor.OnayliMuhtasarVePrim && projerapor.SGKTahakkuk))) {
-          setStepFunc((projerapor.SurecSirasi + 1) > 3 ? 3 : projerapor.SurecSirasi + 1);
+        if (projerapor.SurecSirasi >= 3 && (projerapor.CalismaSureleri && projerapor.SGKHizmet && projerapor.MuhtasarVePrim && projerapor.OnayliSGKHizmet && projerapor.OnayliMuhtasarVePrim && projerapor.SGKTahakkuk)) {
+          setStepFunc(4);
+        }else if (projerapor.SurecSirasi >= 2 && (projerapor.CalismaSureleri && projerapor.SGKHizmet && projerapor.MuhtasarVePrim)) {
+          setStepFunc(3);
+        }else if ((projerapor.SurecSirasi >= 1 && projerapor.CalismaSureleri)) {
+          setStepFunc(2);
         } else {
-          setStepFunc(projerapor.SurecSirasi);
+          setStepFunc(1);
         }
 
 
@@ -379,13 +385,11 @@ const DokumanYuklemeContent = () => {
             }
 
 
-
             {
-
-              Step1 && seciliDonem &&
+              Step && seciliDonem &&
               <Suspense fallback={<div>Yükleniyor...</div>}>
                 <div style={currentStep !== 1 ? { height: 0, width: 0, overflow: 'hidden', opacity: 0 } : {}}>
-                  <Step1
+                  <Step
                     fetchFile={fetchFile}
                     handleSubmit={handleSubmit}
                     donemler={donemler}
@@ -396,9 +400,22 @@ const DokumanYuklemeContent = () => {
 
             {
 
-              Step2 && seciliDonem &&
+              Step1 && seciliDonem &&
               <Suspense fallback={<div>Yükleniyor...</div>}>
                 <div style={currentStep !== 2 ? { height: 0, width: 0, overflow: 'hidden', opacity: 0 } : {}}>
+                  <Step1
+                    fetchFile={fetchFile}
+                    handleSubmit={handleSubmit}
+                  />
+                </div>
+              </Suspense>
+            }
+
+            {
+
+              Step2 && seciliDonem &&
+              <Suspense fallback={<div>Yükleniyor...</div>}>
+                <div style={currentStep !== 3 ? { height: 0, width: 0, overflow: 'hidden', opacity: 0 } : {}}>
                   <Step2
                     fetchFile={fetchFile}
                     handleSubmit={handleSubmit}
@@ -411,7 +428,7 @@ const DokumanYuklemeContent = () => {
 
               Step3 && seciliDonem &&
               <Suspense fallback={<div>Yükleniyor...</div>}>
-                <div style={currentStep !== 3 ? { height: 0, width: 0, overflow: 'hidden', opacity: 0 } : {}}>
+                <div style={currentStep !== 4 ? { height: 0, width: 0, overflow: 'hidden', opacity: 0 } : {}}>
                   <Step3
                     handleSubmit={handleSubmit}
                   />
@@ -434,7 +451,7 @@ const DokumanYuklemeContent = () => {
               </Button>
             </div>
             <div className="flex gap-3">
-              {currentStep === 3 ? (
+              {currentStep === 4 ? (
                 <></>
               ) : (
                 <Button
